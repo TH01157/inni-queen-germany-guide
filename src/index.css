@@ -8,33 +8,47 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
+    /* Inni Queen Brand Colors */
     --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-
+    --foreground: 345 28% 25%;
+    
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-
+    --card-foreground: 345 28% 25%;
+    
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
-
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-
+    --popover-foreground: 345 28% 25%;
+    
+    /* Primary: Wine Red (#ac435d) */
+    --primary: 345 43% 46%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 345 43% 60%;
+    
+    /* Secondary: Warm Pink (#f6d9dc) */
+    --secondary: 348 38% 91%;
+    --secondary-foreground: 345 28% 25%;
+    
+    /* Muted tones */
+    --muted: 348 25% 95%;
+    --muted-foreground: 345 15% 45%;
+    
+    /* Accent: Soft rose */
+    --accent: 348 45% 85%;
+    --accent-foreground: 345 28% 25%;
+    
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --destructive-foreground: 0 0% 100%;
+    
+    --border: 348 20% 88%;
+    --input: 348 20% 88%;
+    --ring: 345 43% 46%;
+    
+    /* Hero gradient */
+    --gradient-hero: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
+    --gradient-soft: linear-gradient(135deg, hsl(var(--secondary)), hsl(var(--accent)));
+    
+    /* Shadows */
+    --shadow-soft: 0 4px 20px hsl(var(--primary) / 0.1);
+    --shadow-glow: 0 8px 30px hsl(var(--primary-glow) / 0.2);
 
     --radius: 0.5rem;
 
@@ -101,5 +115,46 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  }
+
+  /* Beautiful gradients */
+  .gradient-hero {
+    background: var(--gradient-hero);
+  }
+  
+  .gradient-soft {
+    background: var(--gradient-soft);
+  }
+  
+  /* Custom shadows */
+  .shadow-soft {
+    box-shadow: var(--shadow-soft);
+  }
+  
+  .shadow-glow {
+    box-shadow: var(--shadow-glow);
+  }
+  
+  /* Smooth animations */
+  .transition-all {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}
+
+@layer components {
+  /* Hero button variant */
+  .btn-hero {
+    @apply bg-primary text-primary-foreground hover:shadow-glow transform hover:scale-105 transition-all duration-300 rounded-full px-8 py-4 font-semibold;
+  }
+  
+  /* Soft card styling */
+  .card-soft {
+    @apply bg-card border border-border rounded-xl shadow-soft hover:shadow-glow transition-all duration-300;
+  }
+  
+  /* Section spacing */
+  .section-padding {
+    @apply py-16 md:py-24;
   }
 }
