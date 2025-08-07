@@ -1,18 +1,46 @@
 import { useState } from 'react';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, ChevronDown, Heart, Sparkles, Scale, TrendingUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link, useLocation } from 'react-router-dom';
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [showBlogDropdown, setShowBlogDropdown] = useState(false);
   const location = useLocation();
 
   const menuItems = [
     { name: 'Trang chủ', href: '/', isRoute: true },
-    { name: 'Blog', href: '/blog', isRoute: true },
+    { name: 'Blog', href: '/blog', isRoute: true, hasDropdown: true },
     { name: 'Khóa học', href: '#courses', isRoute: false },
     { name: 'Giới thiệu', href: '#about', isRoute: false },
     { name: 'Liên hệ', href: '/contact', isRoute: true },
+  ];
+
+  const blogCategories = [
+    {
+      icon: Heart,
+      title: 'Tình yêu - Hôn nhân - Gia đình',
+      description: 'Tư vấn về các mối quan hệ và gia đình',
+      href: '/blog/love-family'
+    },
+    {
+      icon: Sparkles,
+      title: 'Lối sống - Chữa lành - Tỉnh thức',
+      description: 'Phát triển bản thân và chữa lành',
+      href: '/blog/lifestyle-healing'
+    },
+    {
+      icon: Scale,
+      title: 'Luật pháp ở Đức',
+      description: 'Hướng dẫn luật pháp cho người nước ngoài',
+      href: '/blog/german-law'
+    },
+    {
+      icon: TrendingUp,
+      title: 'Tài chính - Quản lý chi tiêu',
+      description: 'Kiến thức tài chính cá nhân',
+      href: '/blog/finance'
+    }
   ];
 
   return (
@@ -30,7 +58,49 @@ const Navigation = () => {
           <div className="hidden md:block">
             <div className="ml-10 flex items-baseline space-x-8">
               {menuItems.map((item) => (
-                item.isRoute ? (
+                item.hasDropdown ? (
+                  <div 
+                    key={item.name}
+                    className="relative"
+                    onMouseEnter={() => setShowBlogDropdown(true)}
+                    onMouseLeave={() => setShowBlogDropdown(false)}
+                  >
+                    <Link
+                      to={item.href}
+                      className="text-foreground hover:text-primary transition-colors duration-200 font-medium flex items-center gap-1"
+                    >
+                      {item.name}
+                      <ChevronDown className="w-4 h-4" />
+                    </Link>
+                    
+                    {/* Dropdown Menu */}
+                    {showBlogDropdown && (
+                      <div className="absolute top-full left-0 mt-2 w-80 bg-background border border-border rounded-lg shadow-lg z-50 p-4">
+                        <div className="grid gap-3">
+                          {blogCategories.map((category, index) => (
+                            <Link
+                              key={index}
+                              to={category.href}
+                              className="flex items-start gap-3 p-3 rounded-lg hover:bg-muted transition-colors group"
+                            >
+                              <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                                <category.icon className="w-5 h-5 text-primary" />
+                              </div>
+                              <div className="flex-1">
+                                <h4 className="font-medium text-foreground text-sm group-hover:text-primary transition-colors">
+                                  {category.title}
+                                </h4>
+                                <p className="text-xs text-muted-foreground mt-1">
+                                  {category.description}
+                                </p>
+                              </div>
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ) : item.isRoute ? (
                   <Link
                     key={item.name}
                     to={item.href}
