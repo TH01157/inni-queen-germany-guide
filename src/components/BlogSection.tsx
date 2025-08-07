@@ -73,30 +73,23 @@ const BlogSection = () => {
           </p>
         </div>
 
-        {/* Categories - Hidden by default, shown on hover */}
-        <div className="relative group/categories mb-16">
-          <div className="text-center py-8 border-2 border-dashed border-border rounded-lg cursor-pointer group-hover/categories:border-primary transition-colors">
-            <h3 className="text-lg font-semibold text-foreground mb-2">Khám phá các chuyên mục</h3>
-            <p className="text-muted-foreground text-sm">Di chuột để xem các chủ đề</p>
-          </div>
-          
-          <div className="absolute inset-0 opacity-0 group-hover/categories:opacity-100 transition-opacity duration-300 pointer-events-none group-hover/categories:pointer-events-auto">
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 bg-background/95 backdrop-blur-sm p-6 rounded-lg border shadow-lg">
-              {categories.map((category, index) => (
-                <div key={index} className="card-soft p-6 text-center group cursor-pointer">
-                  <div className={`w-16 h-16 ${category.color} rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300`}>
-                    <category.icon className="w-8 h-8" />
-                  </div>
-                  <h3 className="font-semibold text-foreground mb-2 group-hover:text-primary transition-colors">
-                    {category.title}
-                  </h3>
-                  <p className="text-sm text-muted-foreground mb-3">{category.description}</p>
-                  <div className="text-xs text-primary font-medium">
-                    {category.posts} bài viết
-                  </div>
+        {/* Categories */}
+        <div className="mb-16">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {categories.map((category, index) => (
+              <div key={index} className="card-soft p-6 text-center group cursor-pointer">
+                <div className={`w-16 h-16 ${category.color} rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300`}>
+                  <category.icon className="w-8 h-8" />
                 </div>
-              ))}
-            </div>
+                <h3 className="font-semibold text-foreground mb-2 group-hover:text-primary transition-colors">
+                  {category.title}
+                </h3>
+                <p className="text-sm text-muted-foreground mb-3">{category.description}</p>
+                <div className="text-xs text-primary font-medium">
+                  {category.posts} bài viết
+                </div>
+              </div>
+            ))}
           </div>
         </div>
 
