@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Menu, X, ChevronDown, Heart, Sparkles, Scale, TrendingUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link, useLocation } from 'react-router-dom';
@@ -7,6 +7,31 @@ const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [showBlogDropdown, setShowBlogDropdown] = useState(false);
   const location = useLocation();
+
+  const blogDropdownRef = useRef<HTMLDivElement | null>(null);
+
+  // Close dropdown on outside click or Esc
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (blogDropdownRef.current && !blogDropdownRef.current.contains(e.target as Node)) {
+        setShowBlogDropdown(false);
+      }
+    };
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setShowBlogDropdown(false);
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleEsc);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleEsc);
+    };
+  }, []);
+
+  // Close when route changes
+  useEffect(() => {
+    setShowBlogDropdown(false);
+  }, [location.pathname]);
 
   const menuItems = [
     { name: 'Trang chủ', href: '/', isRoute: true },
@@ -59,11 +84,11 @@ const Navigation = () => {
             <div className="ml-10 flex items-baseline space-x-8">
               {menuItems.map((item) => (
                 item.hasDropdown ? (
-                  <div 
+                  <div
                     key={item.name}
                     className="relative"
+                    ref={blogDropdownRef}
                     onMouseEnter={() => setShowBlogDropdown(true)}
-                    onMouseLeave={() => setShowBlogDropdown(false)}
                   >
                     <Link
                       to={item.href}
