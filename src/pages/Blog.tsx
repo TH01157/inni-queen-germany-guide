@@ -17,7 +17,7 @@ const Blog = () => {
       title: 'Lối sống - Chữa lành - Tỉnh thức',
       description: 'Phát triển bản thân, chữa lành tâm hồn và sống có ý thức',
       color: 'bg-purple-100 text-purple-600',
-      posts: 31
+      posts: 32
     },
     {
       icon: Scale,
@@ -36,6 +36,14 @@ const Blog = () => {
   ];
 
   const featuredPosts = [
+    {
+      title: '10 gợi ý để bạn trở nên tự tin',
+      excerpt: 'Ai trong chúng ta cũng hiểu rằng, một người phụ nữ tự tin luôn là người cuốn hút và được phái nam để ý và theo đuổi, vậy sự tự tin đó tới từ đâu? Tin vui là các bạn hoàn toàn có thể tập luyện...',
+      category: 'Chữa lành',
+      date: '2024-01-18',
+      readTime: '7 phút đọc',
+      image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&h=300&fit=crop'
+    },
     {
       title: '5 điều cần biết trước khi kết hôn ở Đức',
       excerpt: 'Những thủ tục pháp lý và chuẩn bị cần thiết cho cuộc sống hôn nhân tại Đức...',
