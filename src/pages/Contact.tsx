@@ -124,7 +124,7 @@ const Contact = () => {
                       </div>
                       <div>
                         <h3 className="font-semibold text-foreground mb-1">Email</h3>
-                        <p className="text-muted-foreground">thu@inniqueen.de</p>
+                        <p className="text-muted-foreground">info@inniqueen.de</p>
                         <p className="text-sm text-muted-foreground">Phản hồi trong vòng 24 giờ</p>
                       </div>
                     </div>
@@ -135,7 +135,7 @@ const Contact = () => {
                       </div>
                       <div>
                         <h3 className="font-semibold text-foreground mb-1">Điện thoại</h3>
-                        <p className="text-muted-foreground">+49 xxx xxx xxxx</p>
+                        <p className="text-muted-foreground">+49 176 4388 8635</p>
                         <p className="text-sm text-muted-foreground">T2-T6: 9:00 - 17:00 (CET)</p>
                       </div>
                     </div>
@@ -146,7 +146,7 @@ const Contact = () => {
                       </div>
                       <div>
                         <h3 className="font-semibold text-foreground mb-1">Địa chỉ</h3>
-                        <p className="text-muted-foreground">Deutschland</p>
+                        <p className="text-muted-foreground">01157 Dresden, Deutschland</p>
                         <p className="text-sm text-muted-foreground">Tư vấn online & offline</p>
                       </div>
                     </div>
