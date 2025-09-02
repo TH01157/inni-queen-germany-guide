@@ -74,9 +74,11 @@ const Lifestyle = () => {
                     <p className="text-muted-foreground text-sm line-clamp-3 mb-4">
                       {post.excerpt}
                     </p>
-                    <Button variant="ghost" className="p-0 h-auto font-medium text-primary hover:text-primary-foreground hover:bg-primary">
-                      Đọc tiếp
-                      <ArrowRight className="w-4 h-4 ml-2" />
+                    <Button variant="ghost" className="p-0 h-auto font-medium text-primary hover:text-primary-foreground hover:bg-primary" asChild>
+                      <a href={index === 0 ? '/posts/10-goi-y-de-ban-tro-nen-tu-tin' : '#'}>
+                        Đọc tiếp
+                        <ArrowRight className="w-4 h-4 ml-2" />
+                      </a>
                     </Button>
                   </div>
                 </article>

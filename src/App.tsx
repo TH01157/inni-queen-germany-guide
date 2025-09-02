@@ -11,6 +11,7 @@ import LoveFamily from "./pages/categories/LoveFamily";
 import Lifestyle from "./pages/categories/Lifestyle";
 import Legal from "./pages/categories/Legal";
 import Finance from "./pages/categories/Finance";
+import TuTinPost from "./pages/posts/TuTinPost";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -30,6 +31,7 @@ const App = () => (
           <Route path="/blog/loi-song-chua-lanh" element={<Lifestyle />} />
           <Route path="/blog/luat-phap" element={<Legal />} />
           <Route path="/blog/tai-chinh" element={<Finance />} />
+          <Route path="/posts/10-goi-y-de-ban-tro-nen-tu-tin" element={<TuTinPost />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
