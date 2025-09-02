@@ -12,7 +12,7 @@ const Blog = () => {
       description: "Tư vấn về các mối quan hệ, hôn nhân và cuộc sống gia đình ở Đức",
       color: "bg-red-100 text-red-600",
       posts: 24,
-      url: "/blog/tinh-yeu-hon-nhan-gia-dinh",
+      url: "/blog/tinh-yeu-hon-nhan",
     },
     {
       icon: Sparkles,
@@ -28,7 +28,7 @@ const Blog = () => {
       description: "Hướng dẫn về luật pháp, quyền lợi và nghĩa vụ của người nước ngoài",
       color: "bg-blue-100 text-blue-600",
       posts: 18,
-      url: "/blog/luat-phap-o-duc",
+      url: "/blog/luat-phap",
     },
     {
       icon: TrendingUp,
@@ -36,15 +36,15 @@ const Blog = () => {
       description: "Kiến thức về tài chính cá nhân và đạt được độc lập tài chính",
       color: "bg-green-100 text-green-600",
       posts: 22,
-      url: "/blog/tai-chinh-quan-ly-chi-tieu",
+      url: "/blog/tai-chinh",
     },
   ];
 
   const featuredPosts = [
     {
       title: "10 gợi ý để bạn trở nên tự tin",
-      slug: "tu-tin",
-      url: "/blog/loi-song-chua-lanh/tu-tin", // Trang chi tiết TuTinPost.tsx
+      slug: "10-goi-y-de-ban-tro-nen-tu-tin",
+      url: "/posts/10-goi-y-de-ban-tro-nen-tu-tin", // KHỚP App.tsx của bạn
       excerpt:
         "Ai trong chúng ta cũng hiểu rằng, một người phụ nữ tự tin luôn là người cuốn hút và được phái nam để ý và theo đuổi, vậy sự tự tin đó tới từ đâu? Tin vui là các bạn hoàn toàn có thể tập luyện...",
       category: "Chữa lành",
@@ -56,7 +56,7 @@ const Blog = () => {
     {
       title: "5 điều cần biết trước khi kết hôn ở Đức",
       slug: "5-dieu-can-biet-truoc-khi-ket-hon-o-duc",
-      url: "/blog/luat-phap-o-duc/5-dieu-can-biet-truoc-khi-ket-hon-o-duc",
+      url: "/blog/luat-phap", // tạm dẫn về chuyên mục
       excerpt:
         "Những thủ tục pháp lý và chuẩn bị cần thiết cho cuộc sống hôn nhân tại Đức...",
       category: "Luật pháp",
@@ -68,7 +68,7 @@ const Blog = () => {
     {
       title: "Từ đổ vỡ đến tái sinh: Hành trình chữa lành của tôi",
       slug: "tu-do-vo-den-tai-sinh-hanh-trinh-chua-lanh",
-      url: "/blog/loi-song-chua-lanh/tu-do-vo-den-tai-sinh-hanh-trinh-chua-lanh",
+      url: "/blog/loi-song-chua-lanh",
       excerpt:
         "Chia sẻ về quá trình vượt qua khó khăn và tìm lại chính mình sau những thử thách...",
       category: "Chữa lành",
@@ -80,7 +80,7 @@ const Blog = () => {
     {
       title: "Lập kế hoạch tài chính cho gia đình trẻ ở Đức",
       slug: "lap-ke-hoach-tai-chinh-cho-gia-dinh-tre-o-duc",
-      url: "/blog/tai-chinh-quan-ly-chi-tieu/lap-ke-hoach-tai-chinh-cho-gia-dinh-tre-o-duc",
+      url: "/blog/tai-chinh",
       excerpt:
         "Những bước đầu tiên để xây dựng nền tảng tài chính vững chắc cho gia đình...",
       category: "Tài chính",
@@ -92,7 +92,7 @@ const Blog = () => {
     {
       title: "Hiểu về quyền lợi bảo hiểm y tế ở Đức",
       slug: "hieu-ve-quyen-loi-bao-hiem-y-te-o-duc",
-      url: "/blog/luat-phap-o-duc/hieu-ve-quyen-loi-bao-hiem-y-te-o-duc",
+      url: "/blog/luat-phap",
       excerpt:
         "Tìm hiểu chi tiết về hệ thống bảo hiểm y tế và các quyền lợi cơ bản...",
       category: "Luật pháp",
@@ -104,7 +104,7 @@ const Blog = () => {
     {
       title: "Cách xây dựng mối quan hệ bền vững",
       slug: "cach-xay-dung-moi-quan-he-ben-vung",
-      url: "/blog/tinh-yeu-hon-nhan-gia-dinh/cach-xay-dung-moi-quan-he-ben-vung",
+      url: "/blog/tinh-yeu-hon-nhan",
       excerpt:
         "Những nguyên tắc cơ bản để xây dựng và duy trì mối quan hệ hạnh phúc...",
       category: "Tình yêu",
@@ -116,7 +116,7 @@ const Blog = () => {
     {
       title: "Quản lý tài chính cá nhân hiệu quả",
       slug: "quan-ly-tai-chinh-ca-nhan-hieu-qua",
-      url: "/blog/tai-chinh-quan-ly-chi-tieu/quan-ly-tai-chinh-ca-nhan-hieu-qua",
+      url: "/blog/tai-chinh",
       excerpt:
         "Hướng dẫn chi tiết về cách lập ngân sách và tiết kiệm một cách thông minh...",
       category: "Tài chính",
@@ -145,16 +145,14 @@ const Blog = () => {
           </div>
         </section>
 
-        {/* Categories (click toàn khung) */}
+        {/* Categories (toàn khung click được) */}
         <section className="section-padding">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h2 className="text-3xl font-bold text-foreground mb-8 text-center">Chuyên mục</h2>
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
               {categories.map((category, index) => (
                 <article key={index} className="card-soft p-6 text-center group cursor-pointer relative">
-                  {category.url && (
-                    <Link to={category.url} className="absolute inset-0 z-10" aria-label={category.title} />
-                  )}
+                  <Link to={category.url} className="absolute inset-0 z-10" aria-label={category.title} />
                   <div
                     className={`w-16 h-16 ${category.color} rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300`}
                   >
@@ -171,7 +169,7 @@ const Blog = () => {
           </div>
         </section>
 
-        {/* Featured Posts (click toàn khung) */}
+        {/* Featured Posts (toàn khung click được) */}
         <section className="section-padding bg-muted/30">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h2 className="text-3xl font-bold text-foreground mb-8">Bài viết nổi bật</h2>
