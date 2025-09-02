@@ -1,30 +1,36 @@
-import Navigation from '@/components/Navigation';
-import Footer from '@/components/Footer';
-import { Button } from '@/components/ui/button';
-import { Sparkles, Calendar, User, ArrowRight } from 'lucide-react';
+import Navigation from "@/components/Navigation";
+import Footer from "@/components/Footer";
+import { Sparkles, Calendar, User, ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Lifestyle = () => {
   const posts = [
     {
-      title: '10 gợi ý để bạn trở nên tự tin',
-      excerpt: 'Ai trong chúng ta cũng hiểu rằng, một người phụ nữ tự tin luôn là người cuốn hút và được phái nam để ý và theo đuổi, vậy sự tự tin đó tới từ đâu? Tin vui là các bạn hoàn toàn có thể tập luyện...',
-      date: '2024-01-18',
-      readTime: '7 phút đọc',
-      image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&h=300&fit=crop'
+      title: "10 gợi ý để bạn trở nên tự tin",
+      excerpt:
+        "Ai trong chúng ta cũng hiểu rằng, một người phụ nữ tự tin luôn là người cuốn hút và được phái nam để ý và theo đuổi, vậy sự tự tin đó tới từ đâu? Tin vui là các bạn hoàn toàn có thể tập luyện...",
+      date: "2025-09-02",
+      readTime: "3 phút đọc",
+      image:
+        "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&h=300&fit=crop",
+      url: "/posts/10-goi-y-de-ban-tro-nen-tu-tin", // trang chi tiết đã có
     },
     {
-      title: 'Từ đổ vỡ đến tái sinh: Hành trình chữa lành của tôi',
-      excerpt: 'Chia sẻ về quá trình vượt qua khó khăn và tìm lại chính mình sau những thử thách...',
-      date: '2024-01-12',
-      readTime: '8 phút đọc',
-      image: 'https://images.unsplash.com/photo-1544027993-37dbfe43562a?w=400&h=300&fit=crop'
-    }
+      title: "Từ đổ vỡ đến tái sinh: Hành trình chữa lành của tôi",
+      excerpt:
+        "Chia sẻ về quá trình vượt qua khó khăn và tìm lại chính mình sau những thử thách...",
+      date: "2024-01-12",
+      readTime: "8 phút đọc",
+      image:
+        "https://images.unsplash.com/photo-1544027993-37dbfe43562a?w=400&h=300&fit=crop",
+      url: "/blog/loi-song-chua-lanh", // tạm dẫn về trang chuyên mục (đổi sau khi có trang chi tiết)
+    },
   ];
 
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
-      
+
       <main className="pt-20">
         {/* Hero Section */}
         <section className="section-padding bg-gradient-to-br from-purple-50 to-pink-50">
@@ -46,40 +52,54 @@ const Lifestyle = () => {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
               {posts.map((post, index) => (
-                <article key={index} className="card-soft overflow-hidden group cursor-pointer">
-                  <div className="aspect-video overflow-hidden">
+                <article
+                  key={index}
+                  className="card-soft overflow-hidden group cursor-pointer relative"
+                >
+                  {/* Overlay Link phủ toàn bộ card */}
+                  <Link
+                    to={post.url}
+                    className="absolute inset-0 z-30"
+                    aria-label={`Đọc: ${post.title}`}
+                  />
+
+                  <div className="aspect-video overflow-hidden pointer-events-none">
                     <img
                       src={post.image}
                       alt={post.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      loading="lazy"
                     />
                   </div>
-                  <div className="p-6">
+
+                  {/* pointer-events-none để click xuyên xuống overlay */}
+                  <div className="p-6 pointer-events-none">
                     <div className="flex items-center gap-4 mb-3 text-sm text-muted-foreground">
                       <span className="px-2 py-1 bg-purple-100 text-purple-600 rounded text-xs">
                         Chữa lành
                       </span>
                       <div className="flex items-center gap-1">
                         <Calendar className="w-3 h-3" />
-                        <span>{new Date(post.date).toLocaleDateString('vi-VN')}</span>
+                        <span>{new Date(post.date).toLocaleDateString("vi-VN")}</span>
                       </div>
                       <div className="flex items-center gap-1">
                         <User className="w-3 h-3" />
                         <span>{post.readTime}</span>
                       </div>
                     </div>
+
                     <h4 className="font-semibold text-foreground mb-2 group-hover:text-primary transition-colors line-clamp-2">
-                      {post.title}
+                      <span className="pointer-events-none">{post.title}</span>
                     </h4>
+
                     <p className="text-muted-foreground text-sm line-clamp-3 mb-4">
                       {post.excerpt}
                     </p>
-                    <Button variant="ghost" className="p-0 h-auto font-medium text-primary hover:text-primary-foreground hover:bg-primary" asChild>
-                      <a href={index === 0 ? '/posts/10-goi-y-de-ban-tro-nen-tu-tin' : '#'}>
-                        Đọc tiếp
-                        <ArrowRight className="w-4 h-4 ml-2" />
-                      </a>
-                    </Button>
+
+                    <div className="p-0 h-auto font-medium text-primary group-hover:underline flex items-center">
+                      <span>Đọc tiếp</span>
+                      <ArrowRight className="w-4 h-4 ml-2" />
+                    </div>
                   </div>
                 </article>
               ))}
