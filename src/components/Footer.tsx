@@ -64,15 +64,15 @@ const Footer = () => {
               <ul className="space-y-3">
                 <li className="flex items-center gap-2 text-background/80">
                   <Mail className="w-4 h-4 flex-shrink-0" />
-                  <span className="text-sm">thu@inniqueen.de</span>
+                  <span className="text-sm">info@inniqueen.de</span>
                 </li>
                 <li className="flex items-center gap-2 text-background/80">
                   <Phone className="w-4 h-4 flex-shrink-0" />
-                  <span className="text-sm">+49 xxx xxx xxxx</span>
+                  <span className="text-sm">+49 176 4388 8635</span>
                 </li>
                 <li className="flex items-center gap-2 text-background/80">
                   <MapPin className="w-4 h-4 flex-shrink-0" />
-                  <span className="text-sm">Deutschland</span>
+                  <span className="text-sm">01157 Dresden, Deutschland</span>
                 </li>
               </ul>
             </div>
@@ -83,7 +83,7 @@ const Footer = () => {
         <div className="border-t border-background/20 py-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="text-background/60 text-sm">
-              © 2024 Inni Queen. Tất cả quyền được bảo lưu.
+              © 2023 Inni Queen. Tất cả quyền được bảo lưu.
             </div>
             
             <div className="flex gap-6 text-sm">
