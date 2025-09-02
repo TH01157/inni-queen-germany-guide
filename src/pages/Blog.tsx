@@ -18,7 +18,7 @@ const Blog = () => {
       url: "/posts/10-goi-y-de-ban-tro-nen-tu-tin", // khớp App.tsx
       excerpt: "Ai trong chúng ta cũng hiểu rằng, một người phụ nữ tự tin luôn là người cuốn hút và được phái nam để ý và theo đuổi, vậy sự tự tin đó tới từ đâu? Tin vui là các bạn hoàn toàn có thể tập luyện...",
       category: "Chữa lành",
-      date: "2025-02-09",
+      date: "2025-09-02",
       readTime: "3 phút đọc",
       image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&h=300&fit=crop",
     },
