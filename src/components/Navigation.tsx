@@ -37,7 +37,7 @@ const Navigation = () => {
     { name: 'Trang chủ', href: '/', isRoute: true },
     { name: 'Blog', href: '/blog', isRoute: true, hasDropdown: true },
     { name: 'Khóa học', href: '#courses', isRoute: false },
-    { name: 'Giới thiệu', href: '#about', isRoute: false },
+    { name: 'Giới thiệu', href: '/about', isRoute: true },
     { name: 'Liên hệ', href: '/contact', isRoute: true },
   ];
 
@@ -45,26 +45,26 @@ const Navigation = () => {
     {
       icon: Heart,
       title: 'Tình yêu - Hôn nhân - Gia đình',
-      description: 'Tư vấn về các mối quan hệ và gia đình',
-      href: '/blog/love-family'
+      description: 'Tư vấn về các mối quan hệ, hôn nhân và cuộc sống gia đình ở Đức',
+      href: '/blog/tinh-yeu-hon-nhan'
     },
     {
       icon: Sparkles,
       title: 'Lối sống - Chữa lành - Tỉnh thức',
-      description: 'Phát triển bản thân và chữa lành',
-      href: '/blog/lifestyle-healing'
+      description: 'Phát triển bản thân, chữa lành tâm hồn và sống có ý thức',
+      href: '/blog/loi-song-chua-lanh'
     },
     {
       icon: Scale,
       title: 'Luật pháp ở Đức',
-      description: 'Hướng dẫn luật pháp cho người nước ngoài',
-      href: '/blog/german-law'
+      description: 'Hướng dẫn về luật pháp, quyền lợi và nghĩa vụ của người nước ngoài',
+      href: '/blog/luat-phap'
     },
     {
       icon: TrendingUp,
       title: 'Tài chính - Quản lý chi tiêu',
-      description: 'Kiến thức tài chính cá nhân',
-      href: '/blog/finance'
+      description: 'Kiến thức về tài chính cá nhân và đạt được độc lập tài chính',
+      href: '/blog/tai-chinh'
     }
   ];
 

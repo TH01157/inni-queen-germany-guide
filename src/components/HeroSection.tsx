@@ -29,10 +29,10 @@ const HeroSection = () => {
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-              <Button className="btn-hero text-lg">
+              <Button className="btn-hero text-lg" onClick={() => window.location.href = '/blog'}>
                 Khám phá ngay
               </Button>
-              <Button variant="outline" size="lg" className="text-lg border-primary text-primary hover:bg-primary hover:text-primary-foreground">
+              <Button variant="outline" size="lg" className="text-lg border-primary text-primary hover:bg-primary hover:text-primary-foreground" onClick={() => window.location.href = '/about'}>
                 Tìm hiểu thêm
               </Button>
             </div>
