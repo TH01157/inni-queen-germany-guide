@@ -3,8 +3,8 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches:
-      - main          # nhánh chính
-      - lovable       # nếu Lovable push vào nhánh này
+      - main
+      - lovable
   workflow_dispatch:
 
 permissions:
@@ -35,8 +35,10 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Prepare Pages artifact (CNAME + nojekyll)
+      # SPA fallback + domain
+      - name: Prepare Pages artifact
         run: |
+          cp dist/index.html dist/404.html
           echo "www.inniqueen.com" > dist/CNAME
           echo > dist/.nojekyll
 
