@@ -1,46 +1,62 @@
 @echo off
-setlocal
+setlocal ENABLEDELAYEDEXPANSION
 
-REM ==== Thư mục repo ====
-cd /d "C:\Users\maian\Desktop\Github-Inniqueen" || (
-  echo Khong tim thay thu muc repo. Kiem tra lai duong dan.
+REM ==== THU MUC REPO ====
+set REPO_DIR=C:\Users\maian\Desktop\Github-Inniqueen
+cd /d "%REPO_DIR%" || (
+  echo [%date% %time%] ERROR: Khong tim thay thu muc repo "%REPO_DIR%".
   pause
   exit /b 1
 )
 
-REM ==== Kiem tra user.name ====
+REM ==== LOG FILE ====
+set LOG_FILE=%REPO_DIR%\git-log.txt
+echo.>> "%LOG_FILE%"
+echo =============================>> "%LOG_FILE%"
+echo [START] %date% %time% >> "%LOG_FILE%"
+
+REM ==== KIEM TRA / CAI DAT user.name, user.email ====
 for /f "delims=" %%i in ('git config user.name') do set GIT_NAME=%%i
 if "%GIT_NAME%"=="" (
-  echo Chua co user.name -> Cai dat mac dinh: TH01157
-  git config --global user.name "TH01157"
+  echo [%date% %time%] INFO: Set user.name = TH01157 >> "%LOG_FILE%"
+  git config --global user.name "TH01157" >> "%LOG_FILE%" 2>&1
 )
 
-REM ==== Kiem tra user.email ====
 for /f "delims=" %%i in ('git config user.email') do set GIT_EMAIL=%%i
 if "%GIT_EMAIL%"=="" (
-  echo Chua co user.email -> Cai dat mac dinh: heinze01157@gmail.com
-  git config --global user.email "heinze01157@gmail.com"
+  echo [%date% %time%] INFO: Set user.email = heinze01157@gmail.com >> "%LOG_FILE%"
+  git config --global user.email "heinze01157@gmail.com" >> "%LOG_FILE%" 2>&1
 )
 
-REM ==== Dong bo code moi nhat ve ====
-git pull origin main
+echo [%date% %time%] INFO: Pull origin main >> "%LOG_FILE%"
+git pull origin main >> "%LOG_FILE%" 2>&1
 
-REM ==== Nhap commit message ====
-set /p msg=Nhap commit message: 
-if "%msg%"=="" set msg=Auto update
+REM ==== NHAP COMMIT MESSAGE ====
+set /p MSG=Nhap commit message: 
+if "%MSG%"=="" set MSG=Auto update
 
-git add .
+REM ==== STAGE FILES ====
+echo [%date% %time%] INFO: git add . >> "%LOG_FILE%"
+git add . >> "%LOG_FILE%" 2>&1
 
-REM ==== Neu khong co gi thay doi thi bo qua commit ====
-for /f "delims=" %%A in ('git status --porcelain') do set changed=1
+REM ==== KIEM TRA CO THAY DOI KHONG ====
+set CHANGED=
+for /f "delims=" %%A in ('git status --porcelain') do set CHANGED=1
 
-if not defined changed (
-  echo Khong co thay doi nao de commit. Chi push neu can.
+if not defined CHANGED (
+  echo [%date% %time%] INFO: Khong co thay doi de commit. >> "%LOG_FILE%"
 ) else (
-  git commit -m "%msg%"
+  echo [%date% %time%] INFO: git commit -m "%MSG%" >> "%LOG_FILE%"
+  git commit -m "%MSG%" >> "%LOG_FILE%" 2>&1
 )
 
-git push origin main
+REM ==== PUSH ====
+echo [%date% %time%] INFO: git push origin main >> "%LOG_FILE%"
+git push origin main >> "%LOG_FILE%" 2>&1
 
-echo ==== Hoan tat! ====
+echo [END] %date% %time% >> "%LOG_FILE%"
+echo =============================>> "%LOG_FILE%"
+echo.
+echo ==== Hoan tat! Xem log tai: "%LOG_FILE%" ====
+
 pause
