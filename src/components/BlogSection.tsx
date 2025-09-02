@@ -10,7 +10,7 @@ const BlogSection = () => {
       description: "Tư vấn về các mối quan hệ, hôn nhân và cuộc sống gia đình ở Đức",
       color: "bg-red-100 text-red-600",
       posts: 24,
-      url: "/blog/tinh-yeu-hon-nhan-gia-dinh",
+      url: "/blog/tinh-yeu-hon-nhan",
     },
     {
       icon: Sparkles,
@@ -26,7 +26,7 @@ const BlogSection = () => {
       description: "Hướng dẫn về luật pháp, quyền lợi và nghĩa vụ của người nước ngoài",
       color: "bg-blue-100 text-blue-600",
       posts: 18,
-      url: "/blog/luat-phap-o-duc",
+      url: "/blog/luat-phap",
     },
     {
       icon: TrendingUp,
@@ -34,40 +34,40 @@ const BlogSection = () => {
       description: "Kiến thức về tài chính cá nhân và đạt được độc lập tài chính",
       color: "bg-green-100 text-green-600",
       posts: 22,
-      url: "/blog/tai-chinh-quan-ly-chi-tieu",
+      url: "/blog/tai-chinh",
     },
   ];
 
   const featuredPosts = [
     {
       title: "5 điều cần biết trước khi kết hôn ở Đức",
-      slug: "5-dieu-can-biet-truoc-khi-ket-hon-o-duc",
-      url: "/blog/luat-phap-o-duc/5-dieu-can-biet-truoc-khi-ket-hon-o-duc",
       excerpt: "Những thủ tục pháp lý và chuẩn bị cần thiết cho cuộc sống hôn nhân tại Đức...",
       category: "Luật pháp",
       date: "2024-01-15",
       readTime: "5 phút đọc",
-      image: "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=400&h=300&fit=crop",
+      image:
+        "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=400&h=300&fit=crop",
+      url: "/blog/luat-phap", // tạm dẫn về chuyên mục (chưa có trang chi tiết)
     },
     {
       title: "Từ đổ vỡ đến tái sinh: Hành trình chữa lành của tôi",
-      slug: "tu-do-vo-den-tai-sinh-hanh-trinh-chua-lanh",
-      url: "/blog/loi-song-chua-lanh/tu-do-vo-den-tai-sinh-hanh-trinh-chua-lanh",
       excerpt: "Chia sẻ về quá trình vượt qua khó khăn và tìm lại chính mình sau những thử thách...",
       category: "Chữa lành",
       date: "2024-01-12",
       readTime: "8 phút đọc",
-      image: "https://images.unsplash.com/photo-1544027993-37dbfe43562a?w=400&h=300&fit=crop",
+      image:
+        "https://images.unsplash.com/photo-1544027993-37dbfe43562a?w=400&h=300&fit=crop",
+      url: "/blog/loi-song-chua-lanh",
     },
     {
       title: "Lập kế hoạch tài chính cho gia đình trẻ ở Đức",
-      slug: "lap-ke-hoach-tai-chinh-cho-gia-dinh-tre-o-duc",
-      url: "/blog/tai-chinh-quan-ly-chi-tieu/lap-ke-hoach-tai-chinh-cho-gia-dinh-tre-o-duc",
       excerpt: "Những bước đầu tiên để xây dựng nền tảng tài chính vững chắc cho gia đình...",
       category: "Tài chính",
       date: "2024-01-10",
       readTime: "6 phút đọc",
-      image: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&h=300&fit=crop",
+      image:
+        "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&h=300&fit=crop",
+      url: "/blog/tai-chinh",
     },
   ];
 
@@ -84,14 +84,12 @@ const BlogSection = () => {
           </p>
         </div>
 
-        {/* Categories (click toàn khung) */}
+        {/* Categories (toàn khung click được) */}
         <div className="mb-16">
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {categories.map((category, index) => (
               <article key={index} className="card-soft p-6 text-center group cursor-pointer relative">
-                {category.url && (
-                  <Link to={category.url} className="absolute inset-0 z-10" aria-label={category.title} />
-                )}
+                <Link to={category.url} className="absolute inset-0 z-10" aria-label={category.title} />
                 <div
                   className={`w-16 h-16 ${category.color} rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300`}
                 >
@@ -107,7 +105,7 @@ const BlogSection = () => {
           </div>
         </div>
 
-        {/* Featured Posts (click toàn khung) */}
+        {/* Featured Posts (toàn khung click được) */}
         <div className="mb-12">
           <h3 className="text-2xl font-semibold text-foreground mb-8">Bài viết nổi bật</h3>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
