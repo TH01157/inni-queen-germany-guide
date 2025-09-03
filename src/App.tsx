@@ -13,8 +13,6 @@ import Lifestyle from "./pages/categories/Lifestyle";
 import Legal from "./pages/categories/Legal";
 import Finance from "./pages/categories/Finance";
 import NotFound from "./pages/NotFound";
-
-// ✅ Route động cho tất cả bài viết
 import PostDynamic from "./pages/PostDynamic";
 
 const queryClient = new QueryClient();
@@ -30,17 +28,15 @@ const App = () => (
           <Route path="/contact" element={<Contact />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/about" element={<About />} />
-
-          {/* Chuyên mục */}
           <Route path="/blog/tinh-yeu-hon-nhan" element={<LoveFamily />} />
           <Route path="/blog/loi-song-chua-lanh" element={<Lifestyle />} />
           <Route path="/blog/luat-phap" element={<Legal />} />
           <Route path="/blog/tai-chinh" element={<Finance />} />
 
-          {/* ✅ TẤT CẢ bài post đi qua 1 route động này */}
+          {/* TẤT CẢ bài post đi qua 1 route động */}
           <Route path="/posts/:slug" element={<PostDynamic />} />
 
-          {/* cuối cùng là 404 */}
+          {/* 404 */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
