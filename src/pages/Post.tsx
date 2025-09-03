@@ -1,53 +1,40 @@
-import { Suspense, lazy, useMemo } from "react";
+// src/pages/Post.tsx
+import { lazy, Suspense, useMemo } from "react";
 import { useParams, Navigate } from "react-router-dom";
-import Navigation from "@/components/Navigation";
-import Footer from "@/components/Footer";
 import { POSTS } from "@/data/posts";
 
 const modules = import.meta.glob("./posts/*.tsx");
 
-function fallbackUI(title?: string) {
+function fallbackUI(title: string) {
   return (
-    <div className="min-h-screen bg-background">
-      <Navigation />
-      <main className="pt-20">
-        <section className="section-padding">
-          <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="animate-pulse space-y-4">
-              <div className="h-8 bg-muted rounded w-2/3" />
-              <div className="h-4 bg-muted rounded w-1/3" />
-              <div className="h-64 bg-muted rounded" />
-              <div className="h-4 bg-muted rounded" />
-              <div className="h-4 bg-muted rounded w-5/6" />
-            </div>
-          </div>
-        </section>
-      </main>
-      <Footer />
+    <div className="min-h-[50vh] flex items-center justify-center">
+      <div className="text-center space-y-3">
+        <div className="text-muted-foreground">Đang tải bài viết…</div>
+        <div className="font-semibold text-lg">{title}</div>
+      </div>
     </div>
   );
 }
 
 export default function Post() {
-  const { slug } = useParams(); // ví dụ "10-goi-y-de-ban-tro-nen-tu-tin"
+  // Nhận slug & chuẩn hoá: bỏ mọi dấu "/" ở cuối (nếu người dùng gõ thêm)
+  const { slug: raw = "" } = useParams();
+  const slug = raw.replace(/\/+$/g, ""); // "a/", "a///" -> "a"
   const fullSlug = `/posts/${slug}`;
 
   // Tìm meta bài từ registry
-  const meta = useMemo(
-    () => POSTS.find((p) => p.slug === fullSlug),
-    [fullSlug]
-  );
+  const meta = useMemo(() => POSTS.find((p) => p.slug === fullSlug), [fullSlug]);
 
   // Không có meta -> về 404
   if (!meta) return <Navigate to="*" replace />;
 
-  // `sourcePath` trong registry đang là "src/pages/posts/TuTinPost.tsx"
-  // Map thành key mà import.meta.glob dùng: "./posts/TuTinPost.tsx"
-  const relKey = `./posts/${meta.sourcePath.split("/").pop()}`;
-  const loader = modules[relKey];
+  // Từ sourcePath lấy ra tên file .tsx trong ./posts
+  const fileName = meta.sourcePath.split("/").pop(); // "TuTinPost.tsx"
+  const relKey = `./posts/${fileName}`;
 
+  const loader = modules[relKey];
   if (!loader) {
-    // Nếu dev đổi tên file mà quên update registry
+    // Nếu đổi tên file mà quên cập nhật registry
     return <Navigate to="*" replace />;
   }
 
