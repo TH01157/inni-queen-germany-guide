@@ -1,87 +1,35 @@
-import { Button } from "@/components/ui/button";
-import { Heart, Sparkles, Scale, TrendingUp, ArrowRight, Calendar } from "lucide-react";
-import Navigation from "@/components/Navigation";
-import Footer from "@/components/Footer";
-import { Link } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { POSTS, CATEGORIES, countByCategory } from "@/data/posts";
+import { Button } from '@/components/ui/button';
+import { Calendar, User } from 'lucide-react';
+import Navigation from '@/components/Navigation';
+import Footer from '@/components/Footer';
+import { Link } from 'react-router-dom';
 
-async function fetchLatestCommitISODate(path: string) {
-  const url = `https://api.github.com/repos/TH01157/inni-queen-germany-guide/commits?path=${encodeURIComponent(
-    path
-  )}&per_page=1`;
-  const res = await fetch(url);
-  if (!res.ok) throw new Error("Cannot fetch commit info");
-  const data = await res.json();
-  const iso =
-    data?.[0]?.commit?.committer?.date ?? data?.[0]?.commit?.author?.date;
-  return iso as string | undefined;
-}
-function formatViDate(dt: Date) {
-  return dt.toLocaleDateString("vi-VN", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
-}
+// LẤY DỮ LIỆU TỪ REGISTRY
+import {
+  CATEGORIES,
+  POSTS,
+  countByCategory,
+  type CategoryKey,
+} from '@/data/posts';
 
 const Blog = () => {
-  // Tự đếm số bài theo category
-  const counts = countByCategory();
+  // Lấy danh sách chuyên mục từ registry
+  const categoryEntries = Object.entries(CATEGORIES) as [CategoryKey, typeof CATEGORIES[CategoryKey]][];
 
-  // Map icon cho từng category
-  const iconMap = {
-    love: Heart,
-    lifestyle: Sparkles,
-    legal: Scale,
-    finance: TrendingUp,
-  } as const;
-
-  // Chuẩn bị dữ liệu categories để render
-  const categories = (Object.keys(CATEGORIES) as Array<keyof typeof CATEGORIES>).map(
-    (key) => ({
-      key,
-      icon: iconMap[key],
-      title: CATEGORIES[key].title,
-      url: CATEGORIES[key].url,
-      color: CATEGORIES[key].color,
-      posts: counts[key],
-    })
-  );
-
-  // Featured posts lấy trực tiếp từ registry
-  const featuredPosts = POSTS;
-
-  const [commitDateMap, setCommitDateMap] = useState<Record<string, string>>({});
-
-  useEffect(() => {
-    // Lấy ngày commit cho từng bài (nếu cần hiển thị)
-    Promise.all(
-      featuredPosts.map(async (p) => {
-        try {
-          const iso = await fetchLatestCommitISODate(p.sourcePath);
-          return [p.slug, iso ? formatViDate(new Date(iso)) : "" ] as const;
-        } catch {
-          return [p.slug, ""] as const;
-        }
-      })
-    ).then((pairs) => {
-      const obj: Record<string, string> = {};
-      for (const [slug, date] of pairs) obj[slug] = date;
-      setCommitDateMap(obj);
-    });
-  }, [featuredPosts]);
+  // Lấy một vài bài nổi bật (tuỳ ý: lấy 3 bài đầu)
+  const featuredPosts = POSTS.slice(0, 3);
 
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
 
       <main className="pt-20">
-        {/* Hero Section */}
+        {/* Hero */}
         <section className="section-padding bg-gradient-to-br from-primary/10 to-secondary/10">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6">
-              Blog & Chia sẻ <span className="gradient-hero bg-clip-text text-transparent">kinh nghiệm</span>
+              Blog & Chia sẻ{' '}
+              <span className="gradient-hero bg-clip-text text-transparent">kinh nghiệm</span>
             </h1>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
               Những câu chuyện, kiến thức và kinh nghiệm thực tế để giúp bạn phát triển và thành công
@@ -89,38 +37,45 @@ const Blog = () => {
           </div>
         </section>
 
-        {/* Categories */}
+        {/* Chuyên mục (ĐẾM TỰ ĐỘNG) */}
         <section className="section-padding">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h2 className="text-3xl font-bold text-foreground mb-8 text-center">Chuyên mục</h2>
+
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
-              {categories.map((category) => (
-                <article key={category.key} className="card-soft p-6 text-center group cursor-pointer relative">
-                  <Link to={category.url} className="absolute inset-0 z-30" aria-label={category.title} />
-                  <div className={`w-16 h-16 ${category.color} rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300`}>
-                    <category.icon className="w-8 h-8" />
-                  </div>
-                  <h3 className="font-semibold text-foreground mb-2 group-hover:text-primary transition-colors">
-                    <span className="pointer-events-none">{category.title}</span>
-                  </h3>
-                  <div className="text-xs text-primary font-medium pointer-events-none">
-                    {category.posts} bài viết
-                  </div>
-                </article>
-              ))}
+              {categoryEntries.map(([key, cat]) => {
+                const cnt = countByCategory(key); // ← Đếm từ registry
+                return (
+                  <Link key={key} to={cat.url} className="card-soft p-6 text-center group">
+                    <div
+                      className={`w-16 h-16 ${cat.color} rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300`}
+                    >
+                      {/* Icon placeholder theo màu – có thể tuỳ chỉnh thêm icon nếu muốn */}
+                      <div className="w-8 h-8 rounded-full opacity-70" />
+                    </div>
+                    <h3 className="font-semibold text-foreground mb-2 group-hover:text-primary transition-colors">
+                      {cat.title}
+                    </h3>
+                    <div className="text-xs text-primary font-medium">
+                      {cnt.toLocaleString('vi-VN')} bài viết
+                    </div>
+                  </Link>
+                );
+              })}
             </div>
           </div>
         </section>
 
-        {/* Featured Posts */}
+        {/* Bài viết nổi bật (tuỳ chọn) */}
         <section className="section-padding bg-muted/30">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h2 className="text-3xl font-bold text-foreground mb-8">Bài viết nổi bật</h2>
+
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
               {featuredPosts.map((post) => (
-                <article key={post.slug} className="card-soft overflow-hidden group cursor-pointer relative">
-                  <Link to={post.slug} className="absolute inset-0 z-30" aria-label={`Đọc: ${post.title}`} />
-                  <div className="aspect-video overflow-hidden pointer-events-none">
+                <article key={post.slug} className="card-soft overflow-hidden group relative">
+                  <Link to={post.slug} className="absolute inset-0" aria-label={post.title} />
+                  <div className="aspect-video overflow-hidden">
                     <img
                       src={post.image}
                       alt={post.title}
@@ -128,48 +83,29 @@ const Blog = () => {
                       loading="lazy"
                     />
                   </div>
-                  <div className="p-6 pointer-events-none">
+                  <div className="p-6 relative z-[1]">
                     <div className="flex items-center gap-4 mb-3 text-sm text-muted-foreground">
                       <span className="px-2 py-1 bg-secondary text-secondary-foreground rounded text-xs">
-                        {/** Nhãn = tên category của bài */}
-                        {CATEGORIES[post.category].title.split(" - ")[0]}
+                        {CATEGORIES[post.category].title.split(' - ')[0]}
                       </span>
                       <div className="flex items-center gap-1">
                         <Calendar className="w-3 h-3" />
-                        <span>{commitDateMap[post.slug] || "Đang lấy ngày đăng..."}</span>
+                        <span>Đang cập nhật</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <User className="w-3 h-3" />
+                        <span>— phút đọc</span>
                       </div>
                     </div>
                     <h4 className="font-semibold text-foreground mb-2 group-hover:text-primary transition-colors line-clamp-2">
-                      <span className="pointer-events-none">{post.title}</span>
+                      {post.title}
                     </h4>
-                    <p className="text-muted-foreground text-sm line-clamp-3 mb-4">{post.excerpt}</p>
-                    <div className="p-0 h-auto font-medium text-primary group-hover:underline flex items-center">
-                      <span>Đọc tiếp</span>
-                      <ArrowRight className="w-4 h-4 ml-2" />
-                    </div>
+                    <p className="text-muted-foreground text-sm line-clamp-3">
+                      {post.excerpt}
+                    </p>
                   </div>
                 </article>
               ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Newsletter Signup */}
-        <section className="section-padding">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="card-soft p-8 text-center max-w-2xl mx-auto">
-              <h3 className="text-2xl font-semibold text-foreground mb-4">Đăng ký nhận bản tin</h3>
-              <p className="text-muted-foreground mb-6">
-                Nhận những bài viết mới nhất và kiến thức hữu ích từ Thu Từ Tâm mỗi tuần
-              </p>
-              <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
-                <input
-                  type="email"
-                  placeholder="Nhập email của bạn"
-                  className="flex-1 px-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                />
-                <Button className="px-6">Đăng ký</Button>
-              </div>
             </div>
           </div>
         </section>
