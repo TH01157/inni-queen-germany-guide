@@ -1,9 +1,9 @@
 import { lazy, Suspense } from "react";
 import { useParams } from "react-router-dom";
 import NotFound from "./NotFound";
-import posts from "@/data/posts";
+import { posts } from "@/data/posts"; // ⬅⬅⬅ đổi sang named import
 
-// Lấy tất cả component post trong thư mục ./posts (cùng cấp với file này)
+// Lấy tất cả component post trong thư mục ./posts
 const modules = import.meta.glob("./posts/*.tsx");
 
 /** "src/pages/posts/TenFile.tsx" -> "./posts/TenFile.tsx" */
