@@ -48,7 +48,6 @@ Có nhiều tranh cãi về tiền… Dưới đây là 8 ý nghĩa:
             <p className="text-lg leading-relaxed"><strong>Tiền là công cụ mạnh mẽ — nhưng không mua được mọi điều cốt lõi.</strong></p>
           </div>
 
-//Nội dung
           <div className="text-foreground space-y-6">
                
                 <p className="text-lg leading-relaxed">
@@ -66,12 +65,14 @@ Có nhiều tranh cãi về tiền… Dưới đây là 8 ý nghĩa:
                     <h3 className="text-xl font-semibold text-foreground mb-3">2. Hạnh Phúc Thực Sự: </h3>
                     <p className="text-muted-foreground leading-relaxed">
                       Hạnh phúc thực sự thường xuất phát từ những điều như mối quan hệ ý nghĩa, sự thành công cá nhân, hoặc cảm giác hài lòng từ việc giúp đỡ người khác. Tiền có thể mua được sự thoải mái và an toàn, nhưng không phải lúc nào cũng đảm bảo hạnh phúc.
-                  <div>
+                    </p>
+                    </div>
+                <div>
                     <h3 className="text-xl font-semibold text-foreground mb-3">3. Sức Khỏe Tuyệt Đối: </h3>
                     <p className="text-muted-foreground leading-relaxed">
                       Tiền có thể mua được dịch vụ y tế tốt và cải thiện chất lượng cuộc sống, nhưng không thể đảm bảo sức khỏe hoàn hảo hoặc chữa khỏi mọi bệnh tật, đặc biệt là các bệnh không thể chữa trị như một số bệnh di truyền hay bệnh giai đoạn cuối.
                     </p>
-                  </div>
+                </div>
                   <div>
                     <h3 className="text-xl font-semibold text-foreground mb-3">4. Thời Gian: </h3>
                     <p className="text-muted-foreground leading-relaxed">
@@ -101,8 +102,7 @@ Có nhiều tranh cãi về tiền… Dưới đây là 8 ý nghĩa:
                     <p className="text-muted-foreground leading-relaxed">
                       Sự bình yên và hòa bình nội tâm thường đến từ sự tự nhận thức, sự chấp nhận và sự hiểu biết về bản thân, không phải từ tiền bạc.
                   </div>
-                  
-                </div>
+            </div>
 
                 <div className="bg-purple-50 border-l-4 border-purple-500 p-6 rounded-r-lg mt-8">
                   <p className="text-lg font-medium text-foreground">
@@ -113,7 +113,7 @@ Có nhiều tranh cãi về tiền… Dưới đây là 8 ý nghĩa:
                   </p>
                 </div>
               </div>
-          //hết Nội dung
+            </div>
         </article>
       </div></section>
     </main>
