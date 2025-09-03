@@ -2,18 +2,15 @@ import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { TrendingUp, Calendar, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { postsByCategory, CATEGORIES } from "@/data/posts";
 
 async function fetchLatestCommitISODate(path: string) {
-  const url = `https://api.github.com/repos/TH01157/inni-queen-germany-guide/commits?path=${encodeURIComponent(
-    path
-  )}&per_page=1`;
+  const url = `https://api.github.com/repos/TH01157/inni-queen-germany-guide/commits?path=${encodeURIComponent(path)}&per_page=1`;
   const res = await fetch(url);
   if (!res.ok) throw new Error("Cannot fetch commit info");
   const data = await res.json();
-  const iso =
-    data?.[0]?.commit?.committer?.date ?? data?.[0]?.commit?.author?.date;
+  const iso = data?.[0]?.commit?.committer?.date ?? data?.[0]?.commit?.author?.date;
   return iso as string | undefined;
 }
 function formatViDate(dt: Date) {
@@ -21,25 +18,32 @@ function formatViDate(dt: Date) {
 }
 
 const Finance = () => {
-  const posts = postsByCategory("finance");
+  const posts = useMemo(() => postsByCategory("finance"), []);
   const [commitDateMap, setCommitDateMap] = useState<Record<string, string>>({});
 
   useEffect(() => {
-    Promise.all(
-      posts.map(async (p) => {
-        try {
-          const iso = await fetchLatestCommitISODate(p.sourcePath);
-          return [p.slug, iso ? formatViDate(new Date(iso)) : ""] as const;
-        } catch {
-          return [p.slug, ""] as const;
-        }
-      })
-    ).then((pairs) => {
+    if (posts.length === 0) return;
+    let cancelled = false;
+    (async () => {
+      const pairs = await Promise.all(
+        posts.map(async (p) => {
+          try {
+            const iso = await fetchLatestCommitISODate(p.sourcePath);
+            return [p.slug, iso ? formatViDate(new Date(iso)) : ""] as const;
+          } catch {
+            return [p.slug, ""] as const;
+          }
+        })
+      );
+      if (cancelled) return;
       const obj: Record<string, string> = {};
       for (const [slug, date] of pairs) obj[slug] = date;
       setCommitDateMap(obj);
-    });
-  }, [posts]);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [posts.length]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -81,9 +85,7 @@ const Finance = () => {
                     </div>
                     <div className="p-6 pointer-events-none">
                       <div className="flex items-center gap-4 mb-3 text-sm text-muted-foreground">
-                        <span className="px-2 py-1 bg-secondary text-secondary-foreground rounded text-xs">
-                          Tài chính
-                        </span>
+                        <span className="px-2 py-1 bg-secondary text-secondary-foreground rounded text-xs">Tài chính</span>
                         <div className="flex items-center gap-1">
                           <Calendar className="w-3 h-3" />
                           <span>{commitDateMap[post.slug] || "Đang lấy ngày đăng..."}</span>
