@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Heart, Sparkles, Scale, TrendingUp, ArrowRight, Calendar } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { POSTS, CATEGORIES, countByCategory } from "@/data/posts";
 
 async function fetchLatestCommitISODate(path: string) {
   const url = `https://api.github.com/repos/TH01157/inni-queen-germany-guide/commits?path=${encodeURIComponent(
@@ -23,35 +24,45 @@ function formatViDate(dt: Date) {
 }
 
 const BlogSection = () => {
-  const categories = [
-    { icon: Heart, title: "Tình yêu - Hôn nhân - Gia đình", description: "Tư vấn về các mối quan hệ, hôn nhân và cuộc sống gia đình ở Đức", color: "bg-red-100 text-red-600", posts: 0, url: "/blog/tinh-yeu-hon-nhan" },
-    { icon: Sparkles, title: "Lối sống - Chữa lành - Tỉnh thức", description: "Phát triển bản thân, chữa lành tâm hồn và sống có ý thức", color: "bg-purple-100 text-purple-600", posts: 1, url: "/blog/loi-song-chua-lanh" },
-    { icon: Scale, title: "Luật pháp ở Đức", description: "Hướng dẫn về luật pháp, quyền lợi và nghĩa vụ của người nước ngoài", color: "bg-blue-100 text-blue-600", posts: 0, url: "/blog/luat-phap" },
-    { icon: TrendingUp, title: "Tài chính - Quản lý chi tiêu", description: "Kiến thức về tài chính cá nhân và đạt được độc lập tài chính", color: "bg-green-100 text-green-600", posts: 0, url: "/blog/tai-chinh" },
-  ];
+  const counts = countByCategory();
 
-  const featuredPosts = [
-    {
-      title: "10 gợi ý để bạn trở nên tự tin",
-      excerpt:
-        "Ai trong chúng ta cũng hiểu rằng, một người phụ nữ tự tin luôn là người cuốn hút và được phái nam để ý và theo đuổi, vậy sự tự tin đó tới từ đâu? Tin vui là các bạn hoàn toàn có thể tập luyện...",
-      category: "Chữa lành",
-      image:
-        "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&h=300&fit=crop",
-      url: "/posts/10-goi-y-de-ban-tro-nen-tu-tin",
-      sourcePath: "src/pages/posts/TuTinPost.tsx",
-    },
-  ];
+  const iconMap = {
+    love: Heart,
+    lifestyle: Sparkles,
+    legal: Scale,
+    finance: TrendingUp,
+  } as const;
 
-  const [commitDate, setCommitDate] = useState<string>("");
+  const categories = (Object.keys(CATEGORIES) as Array<keyof typeof CATEGORIES>).map(
+    (key) => ({
+      key,
+      icon: iconMap[key],
+      title: CATEGORIES[key].title,
+      url: CATEGORIES[key].url,
+      color: CATEGORIES[key].color,
+      posts: counts[key],
+    })
+  );
+
+  const featuredPosts = POSTS;
+  const [commitDateMap, setCommitDateMap] = useState<Record<string, string>>({});
 
   useEffect(() => {
-    fetchLatestCommitISODate("src/pages/posts/TuTinPost.tsx")
-      .then((iso) => {
-        if (iso) setCommitDate(formatViDate(new Date(iso)));
+    Promise.all(
+      featuredPosts.map(async (p) => {
+        try {
+          const iso = await fetchLatestCommitISODate(p.sourcePath);
+          return [p.slug, iso ? formatViDate(new Date(iso)) : ""] as const;
+        } catch {
+          return [p.slug, ""] as const;
+        }
       })
-      .catch(() => setCommitDate(""));
-  }, []);
+    ).then((pairs) => {
+      const obj: Record<string, string> = {};
+      for (const [slug, date] of pairs) obj[slug] = date;
+      setCommitDateMap(obj);
+    });
+  }, [featuredPosts]);
 
   return (
     <section id="blog" className="section-padding bg-muted/30">
@@ -69,8 +80,8 @@ const BlogSection = () => {
         {/* Categories */}
         <div className="mb-16">
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {categories.map((category, index) => (
-              <article key={index} className="card-soft p-6 text-center group cursor-pointer relative">
+            {categories.map((category) => (
+              <article key={category.key} className="card-soft p-6 text-center group cursor-pointer relative">
                 <Link to={category.url} className="absolute inset-0 z-30" aria-label={category.title} />
                 <div className={`w-16 h-16 ${category.color} rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300`}>
                   <category.icon className="w-8 h-8" />
@@ -78,8 +89,9 @@ const BlogSection = () => {
                 <h3 className="font-semibold text-foreground mb-2 group-hover:text-primary transition-colors">
                   <span className="pointer-events-none">{category.title}</span>
                 </h3>
-                <p className="text-sm text-muted-foreground mb-3 pointer-events-none">{category.description}</p>
-                <div className="text-xs text-primary font-medium pointer-events-none">{category.posts} bài viết</div>
+                <div className="text-xs text-primary font-medium pointer-events-none">
+                  {category.posts} bài viết
+                </div>
               </article>
             ))}
           </div>
@@ -89,9 +101,9 @@ const BlogSection = () => {
         <div className="mb-12">
           <h3 className="text-2xl font-semibold text-foreground mb-8">Bài viết nổi bật</h3>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {featuredPosts.map((post, index) => (
-              <article key={index} className="card-soft overflow-hidden group cursor-pointer relative">
-                <Link to={post.url} className="absolute inset-0 z-30" aria-label={`Đọc: ${post.title}`} />
+            {featuredPosts.map((post) => (
+              <article key={post.slug} className="card-soft overflow-hidden group cursor-pointer relative">
+                <Link to={post.slug} className="absolute inset-0 z-30" aria-label={`Đọc: ${post.title}`} />
                 <div className="aspect-video overflow-hidden pointer-events-none">
                   <img
                     src={post.image}
@@ -103,11 +115,11 @@ const BlogSection = () => {
                 <div className="p-6 pointer-events-none">
                   <div className="flex items-center gap-4 mb-3 text-sm text-muted-foreground">
                     <span className="px-2 py-1 bg-secondary text-secondary-foreground rounded text-xs">
-                      {post.category}
+                      {CATEGORIES[post.category].title.split(" - ")[0]}
                     </span>
                     <div className="flex items-center gap-1">
                       <Calendar className="w-3 h-3" />
-                      <span>{commitDate || "Đang lấy ngày đăng..."}</span>
+                      <span>{commitDateMap[post.slug] || "Đang lấy ngày đăng..."}</span>
                     </div>
                   </div>
                   <h4 className="font-semibold text-foreground mb-2 group-hover:text-primary transition-colors line-clamp-2">
@@ -126,7 +138,9 @@ const BlogSection = () => {
 
         {/* Newsletter Signup */}
         <div className="card-soft p-8 text-center max-w-2xl mx-auto">
-          <h3 className="text-2xl font-semibold text-foreground mb-4">Đăng ký nhận bản tin</h3>
+          <h3 className="text-2xl font-semibold text-foreground mb-4">
+            Đăng ký nhận bản tin
+          </h3>
           <p className="text-muted-foreground mb-6">
             Nhận những bài viết mới nhất và kiến thức hữu ích từ Thu Từ Tâm mỗi tuần
           </p>
