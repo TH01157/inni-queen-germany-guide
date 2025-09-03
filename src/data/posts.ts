@@ -7,7 +7,7 @@ export interface PostMeta {
   excerpt: string;
   image: string;
   category: CategoryKey;
-  sourcePath: string;        // Đường dẫn file bài viết trong repo (dùng nếu cần lấy giờ commit)
+  sourcePath: string;        // Đường dẫn file .tsx của bài (dùng lấy ngày commit)
 }
 
 export const POSTS: PostMeta[] = [
@@ -21,7 +21,7 @@ export const POSTS: PostMeta[] = [
     category: "lifestyle",
     sourcePath: "src/pages/posts/TuTinPost.tsx",
   },
-  // Sau này thêm bài mới: chỉ việc push 1 object vào mảng này
+  // Sau này thêm bài: chỉ cần thêm 1 object PostMeta ở đây
 ];
 
 export const CATEGORIES: Record<
@@ -59,4 +59,9 @@ export function countByCategory(): Record<CategoryKey, number> {
   };
   for (const p of POSTS) counts[p.category] += 1;
   return counts;
+}
+
+// ➜ NEW: helper trả về danh sách bài của 1 chuyên mục
+export function postsByCategory(cat: CategoryKey) {
+  return POSTS.filter((p) => p.category === cat);
 }
