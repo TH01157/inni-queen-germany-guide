@@ -2,18 +2,15 @@ import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { Sparkles, Calendar, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { postsByCategory, CATEGORIES } from "@/data/posts";
 
 async function fetchLatestCommitISODate(path: string) {
-  const url = `https://api.github.com/repos/TH01157/inni-queen-germany-guide/commits?path=${encodeURIComponent(
-    path
-  )}&per_page=1`;
+  const url = `https://api.github.com/repos/TH01157/inni-queen-germany-guide/commits?path=${encodeURIComponent(path)}&per_page=1`;
   const res = await fetch(url);
   if (!res.ok) throw new Error("Cannot fetch commit info");
   const data = await res.json();
-  const iso =
-    data?.[0]?.commit?.committer?.date ?? data?.[0]?.commit?.author?.date;
+  const iso = data?.[0]?.commit?.committer?.date ?? data?.[0]?.commit?.author?.date;
   return iso as string | undefined;
 }
 function formatViDate(dt: Date) {
@@ -21,32 +18,38 @@ function formatViDate(dt: Date) {
 }
 
 const Lifestyle = () => {
-  const posts = postsByCategory("lifestyle");
+  const posts = useMemo(() => postsByCategory("lifestyle"), []);
   const [commitDateMap, setCommitDateMap] = useState<Record<string, string>>({});
 
   useEffect(() => {
-    Promise.all(
-      posts.map(async (p) => {
-        try {
-          const iso = await fetchLatestCommitISODate(p.sourcePath);
-          return [p.slug, iso ? formatViDate(new Date(iso)) : ""] as const;
-        } catch {
-          return [p.slug, ""] as const;
-        }
-      })
-    ).then((pairs) => {
+    if (posts.length === 0) return;
+    let cancelled = false;
+    (async () => {
+      const pairs = await Promise.all(
+        posts.map(async (p) => {
+          try {
+            const iso = await fetchLatestCommitISODate(p.sourcePath);
+            return [p.slug, iso ? formatViDate(new Date(iso)) : ""] as const;
+          } catch {
+            return [p.slug, ""] as const;
+          }
+        })
+      );
+      if (cancelled) return;
       const obj: Record<string, string> = {};
       for (const [slug, date] of pairs) obj[slug] = date;
       setCommitDateMap(obj);
-    });
-  }, [posts]);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [posts.length]);
 
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
 
       <main className="pt-20">
-        {/* Hero */}
         <section className="section-padding bg-gradient-to-br from-purple-50 to-pink-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <div className="w-20 h-20 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -61,7 +64,6 @@ const Lifestyle = () => {
           </div>
         </section>
 
-        {/* Posts */}
         <section className="section-padding">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             {posts.length === 0 ? (
