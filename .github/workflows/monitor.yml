@@ -1,12 +1,12 @@
-name: Monitor repo & Pages (day 5m / night 30m, Europe/Berlin)
+name: Monitor repo & Pages (day 5m / night 30m, silent artifacts)
 
 on:
   schedule:
-    - cron: "*/5 * * * *"   # chạy mỗi 5 phút (UTC) - sẽ tự gác cổng theo giờ Berlin
+    - cron: "*/5 * * * *"   # chạy mỗi 5 phút (UTC); sẽ tự gác cổng theo giờ Berlin
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
   pages: read
 
 concurrency:
@@ -17,7 +17,7 @@ jobs:
   monitor:
     runs-on: ubuntu-latest
     steps:
-      # 0) Quyết định có chạy hay skip dựa trên giờ Europe/Berlin
+      # 0) Quyết định chạy/skip theo giờ Europe/Berlin
       - name: Gate by local time (Europe/Berlin)
         id: gate
         shell: bash
@@ -25,18 +25,18 @@ jobs:
           HOUR=$(TZ=Europe/Berlin date +%H)
           MIN=$(TZ=Europe/Berlin date +%M)
 
-          # Điều kiện ban ngày: 08:00–23:59 hoặc 00:00–01:59
+          # Ban ngày: 08:00–23:59 hoặc 00:00–01:59
           if [ "$HOUR" -ge 8 ] || [ "$HOUR" -lt 2 ]; then
             echo "mode=day" >> "$GITHUB_OUTPUT"
-            echo "It's DAY time in Berlin ($HOUR:$MIN). Will run."
+            echo "DAY in Berlin ($HOUR:$MIN). Run."
           else
-            # Ban đêm 02:00–07:59 -> chỉ giữ lại phút 00 hoặc 30
+            # Ban đêm 02:00–07:59 -> chỉ phút 00/30 mới chạy
             if [ $((10#$MIN % 30)) -eq 0 ]; then
               echo "mode=night_run" >> "$GITHUB_OUTPUT"
-              echo "It's NIGHT in Berlin ($HOUR:$MIN) but minute%30==0. Will run."
+              echo "NIGHT in Berlin ($HOUR:$MIN) at 00/30. Run."
             else
               echo "mode=skip" >> "$GITHUB_OUTPUT"
-              echo "It's NIGHT in Berlin ($HOUR:$MIN) and not 00/30. Will skip."
+              echo "NIGHT in Berlin ($HOUR:$MIN) not 00/30. Skip."
             fi
           fi
 
@@ -50,30 +50,63 @@ jobs:
           sudo apt-get update -y
           sudo apt-get install -y jq
 
-      - name: Collect repo + pages status
+      # (A) Sinh context nhẹ: routes, fingerprint các file quan trọng
+      - name: Build lightweight context (context.json)
+        if: steps.gate.outputs.mode != 'skip'
+        run: |
+          node - <<'NODE'
+          const fs = require('fs'), crypto = require('crypto');
+          function read(p){ try { return fs.readFileSync(p,'utf8') } catch { return '' } }
+          function sha(s){ return crypto.createHash('sha256').update(s).digest('hex') }
+          const files = [
+            'src/App.tsx',
+            'src/components/BlogSection.tsx',
+            'src/pages/Blog.tsx',
+            'src/pages/categories/LoveFamily.tsx',
+            'src/pages/categories/Lifestyle.tsx',
+            'src/pages/categories/Legal.tsx',
+            'src/pages/categories/Finance.tsx',
+            'vite.config.ts',
+            '.github/workflows/deploy.yml'
+          ].filter(f => fs.existsSync(f));
+          const out = { created_at: new Date().toISOString(), routes: [], files: {} };
+          const app = read('src/App.tsx');
+          out.routes = [...app.matchAll(/<Route\s+path="([^"]+)"/g)].map(m=>m[1]);
+          for (const f of files) {
+            const t = read(f);
+            out.files[f] = { sha256: sha(t), lines: t ? t.split('\n').length : 0 };
+            if (f.endsWith('BlogSection.tsx') && t) {
+              out.files[f].featuredTitles = [...t.matchAll(/title:\s*'([^']+)'/g)].map(m=>m[1]);
+            }
+          }
+          fs.mkdirSync('.monitor', { recursive: true });
+          fs.writeFileSync('.monitor/context.json', JSON.stringify(out,null,2));
+          NODE
+
+      # (B) Lấy commit & GitHub Pages status → status.json (fail-soft để tránh email lỗi)
+      - name: Collect repo + pages status (status.json)
         if: steps.gate.outputs.mode != 'skip'
         env:
           GH_TOKEN: ${{ github.token }}
           OWNER: TH01157
           REPO: inni-queen-germany-guide
         run: |
-          set -euo pipefail
           mkdir -p .monitor
           NOW=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 
-          LATEST=$(curl -s -H "Authorization: Bearer $GH_TOKEN" \
-            "https://api.github.com/repos/$OWNER/$REPO/commits?sha=main&per_page=1")
-          SHA=$(echo "$LATEST" | jq -r '.[0].sha')
-          COMMIT_DATE=$(echo "$LATEST" | jq -r '.[0].commit.committer.date')
-          MESSAGE=$(echo "$LATEST" | jq -r '.[0].commit.message' | head -c 200)
-          AUTHOR=$(echo "$LATEST" | jq -r '.[0].commit.committer.name')
+          LATEST=$(curl -sS -H "Authorization: Bearer $GH_TOKEN" \
+            "https://api.github.com/repos/$OWNER/$REPO/commits?sha=main&per_page=1" || true)
+          SHA=$(echo "$LATEST" | jq -r '.[0].sha // "unknown"')
+          COMMIT_DATE=$(echo "$LATEST" | jq -r '.[0].commit.committer.date // "unknown"')
+          MESSAGE=$(echo "$LATEST" | jq -r '.[0].commit.message // "unknown"' | head -c 200)
+          AUTHOR=$(echo "$LATEST" | jq -r '.[0].commit.committer.name // "unknown"')
 
-          PAGES=$(curl -s -H "Authorization: Bearer $GH_TOKEN" \
-            "https://api.github.com/repos/$OWNER/$REPO/pages")
+          PAGES=$(curl -sS -H "Authorization: Bearer $GH_TOKEN" \
+            "https://api.github.com/repos/$OWNER/$REPO/pages" || true)
           PAGES_STATUS=$(echo "$PAGES" | jq -r '.status // "unknown"')
 
-          BUILD=$(curl -s -H "Authorization: Bearer $GH_TOKEN" \
-            "https://api.github.com/repos/$OWNER/$REPO/pages/builds/latest")
+          BUILD=$(curl -sS -H "Authorization: Bearer $GH_TOKEN" \
+            "https://api.github.com/repos/$OWNER/$REPO/pages/builds/latest" || true)
           BUILD_STATUS=$(echo "$BUILD" | jq -r '.status // "unknown"')
 
           cat > .monitor/status.json <<EOF
@@ -93,25 +126,11 @@ jobs:
           }
           EOF
 
-          {
-            echo "### Monitor at $NOW (mode: ${{ steps.gate.outputs.mode }})"
-            echo "- Latest commit: \`$SHA\`"
-            echo "- Commit date  : \`$COMMIT_DATE\`"
-            echo "- Author       : \`$AUTHOR\`"
-            echo "- Pages status : \`$PAGES_STATUS\`"
-            echo "- Build status : \`$BUILD_STATUS\`"
-          } >> "$GITHUB_STEP_SUMMARY"
-
-      - name: Commit status file (if changed)
+      # (C) Upload artifact (KHÔNG commit) → im lặng tuyệt đối
+      - name: Upload monitor artifacts
         if: steps.gate.outputs.mode != 'skip'
-        run: |
-          set -e
-          if ! git diff --quiet -- .monitor/status.json; then
-            git config user.name  "github-actions[bot]"
-            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add .monitor/status.json
-            git commit -m "chore(monitor): update status $(date -u +'%Y-%m-%dT%H:%M:%SZ')"
-            git push
-          else
-            echo "No changes to commit."
-          fi
+        uses: actions/upload-artifact@v4
+        with:
+          name: monitor-${{ github.run_id }}
+          path: .monitor/
+          retention-days: 7
