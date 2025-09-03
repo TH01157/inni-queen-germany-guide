@@ -11,7 +11,7 @@ import LoveFamily from "./pages/categories/LoveFamily";
 import Lifestyle from "./pages/categories/Lifestyle";
 import Legal from "./pages/categories/Legal";
 import Finance from "./pages/categories/Finance";
-import Post from "./pages/Post";            // <— dùng router động
+import PostDynamic from "./pages/PostDynamic";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -27,17 +27,15 @@ const App = () => (
           <Route path="/contact" element={<Contact />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/about" element={<About />} />
-
-          {/* Category pages */}
           <Route path="/blog/tinh-yeu-hon-nhan" element={<LoveFamily />} />
           <Route path="/blog/loi-song-chua-lanh" element={<Lifestyle />} />
           <Route path="/blog/luat-phap" element={<Legal />} />
           <Route path="/blog/tai-chinh" element={<Finance />} />
 
-          {/* Post route động: mọi bài đều vào đây */}
-          <Route path="/posts/:slug" element={<Post />} />
+          {/* ✅ Chỉ 1 route động cho tất cả bài viết */}
+          <Route path="/posts/:slug" element={<PostDynamic />} />
 
-          {/* Catch-all */}
+          {/* luôn để cuối */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
