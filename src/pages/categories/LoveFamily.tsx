@@ -2,18 +2,15 @@ import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { Heart, Calendar, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { postsByCategory, CATEGORIES } from "@/data/posts";
 
 async function fetchLatestCommitISODate(path: string) {
-  const url = `https://api.github.com/repos/TH01157/inni-queen-germany-guide/commits?path=${encodeURIComponent(
-    path
-  )}&per_page=1`;
+  const url = `https://api.github.com/repos/TH01157/inni-queen-germany-guide/commits?path=${encodeURIComponent(path)}&per_page=1`;
   const res = await fetch(url);
   if (!res.ok) throw new Error("Cannot fetch commit info");
   const data = await res.json();
-  const iso =
-    data?.[0]?.commit?.committer?.date ?? data?.[0]?.commit?.author?.date;
+  const iso = data?.[0]?.commit?.committer?.date ?? data?.[0]?.commit?.author?.date;
   return iso as string | undefined;
 }
 function formatViDate(dt: Date) {
@@ -21,32 +18,41 @@ function formatViDate(dt: Date) {
 }
 
 const LoveFamily = () => {
-  const posts = postsByCategory("love");
+  // GIỮ THAM CHIẾU ỔN ĐỊNH
+  const posts = useMemo(() => postsByCategory("love"), []);
   const [commitDateMap, setCommitDateMap] = useState<Record<string, string>>({});
 
   useEffect(() => {
-    Promise.all(
-      posts.map(async (p) => {
-        try {
-          const iso = await fetchLatestCommitISODate(p.sourcePath);
-          return [p.slug, iso ? formatViDate(new Date(iso)) : ""] as const;
-        } catch {
-          return [p.slug, ""] as const;
-        }
-      })
-    ).then((pairs) => {
+    // KHÔNG CÓ BÀI THÌ KHÔNG FETCH
+    if (posts.length === 0) return;
+    let cancelled = false;
+    (async () => {
+      const pairs = await Promise.all(
+        posts.map(async (p) => {
+          try {
+            const iso = await fetchLatestCommitISODate(p.sourcePath);
+            return [p.slug, iso ? formatViDate(new Date(iso)) : ""] as const;
+          } catch {
+            return [p.slug, ""] as const;
+          }
+        })
+      );
+      if (cancelled) return;
       const obj: Record<string, string> = {};
       for (const [slug, date] of pairs) obj[slug] = date;
       setCommitDateMap(obj);
-    });
-  }, [posts]);
+    })();
+    return () => {
+      cancelled = true;
+    };
+    // chỉ phụ thuộc vào số lượng (ổn định), tránh phụ thuộc reference của mảng
+  }, [posts.length]);
 
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
 
       <main className="pt-20">
-        {/* Hero */}
         <section className="section-padding bg-gradient-to-br from-rose-50 to-pink-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <div className="w-20 h-20 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -61,19 +67,21 @@ const LoveFamily = () => {
           </div>
         </section>
 
-        {/* Posts */}
         <section className="section-padding">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             {posts.length === 0 ? (
               <div className="card-soft p-10 text-center max-w-2xl mx-auto">
                 <h2 className="text-2xl font-semibold text-foreground mb-3">Chuyên mục đang cập nhật</h2>
-                <p className="text-muted-foreground">
+                <p className="text-muted-foreground mb-6">
                   Hiện chưa có bài viết trong chuyên mục này. Mời chị tham khảo{" "}
                   <Link to="/blog/loi-song-chua-lanh" className="text-primary underline">
                     Lối sống - Chữa lành - Tỉnh thức
-                  </Link>
-                  .
+                  </Link>.
                 </p>
+                <div className="flex gap-3 justify-center">
+                  <Link to="/blog" className="btn btn-primary px-4 py-2 rounded bg-primary text-primary-foreground">Về trang Blog</Link>
+                  <Link to="/" className="btn px-4 py-2 rounded border">Trang chủ</Link>
+                </div>
               </div>
             ) : (
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -90,9 +98,7 @@ const LoveFamily = () => {
                     </div>
                     <div className="p-6 pointer-events-none">
                       <div className="flex items-center gap-4 mb-3 text-sm text-muted-foreground">
-                        <span className="px-2 py-1 bg-secondary text-secondary-foreground rounded text-xs">
-                          Tình yêu
-                        </span>
+                        <span className="px-2 py-1 bg-secondary text-secondary-foreground rounded text-xs">Tình yêu</span>
                         <div className="flex items-center gap-1">
                           <Calendar className="w-3 h-3" />
                           <span>{commitDateMap[post.slug] || "Đang lấy ngày đăng..."}</span>
