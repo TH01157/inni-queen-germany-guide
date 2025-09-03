@@ -1,89 +1,68 @@
 import { Button } from "@/components/ui/button";
-import { Heart, Sparkles, Scale, TrendingUp, ArrowRight, Calendar, User } from "lucide-react";
+import { Heart, Sparkles, Scale, TrendingUp, ArrowRight, Calendar } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+
+async function fetchLatestCommitISODate(path: string) {
+  const url = `https://api.github.com/repos/TH01157/inni-queen-germany-guide/commits?path=${encodeURIComponent(
+    path
+  )}&per_page=1`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error("Cannot fetch commit info");
+  const data = await res.json();
+  const iso =
+    data?.[0]?.commit?.committer?.date ?? data?.[0]?.commit?.author?.date;
+  return iso as string | undefined;
+}
+function formatViDate(dt: Date) {
+  return dt.toLocaleDateString("vi-VN", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+}
 
 const Blog = () => {
   const categories = [
-    { icon: Heart,   title: "Tình yêu - Hôn nhân - Gia đình", description: "Tư vấn về các mối quan hệ, hôn nhân và cuộc sống gia đình ở Đức", color: "bg-red-100 text-red-600",   posts: 24, url: "/blog/tinh-yeu-hon-nhan" },
-    { icon: Sparkles,title: "Lối sống - Chữa lành - Tỉnh thức", description: "Phát triển bản thân, chữa lành tâm hồn và sống có ý thức",      color: "bg-purple-100 text-purple-600", posts: 32, url: "/blog/loi-song-chua-lanh" },
-    { icon: Scale,   title: "Luật pháp ở Đức",                  description: "Hướng dẫn về luật pháp, quyền lợi và nghĩa vụ của người nước ngoài", color: "bg-blue-100 text-blue-600",    posts: 18, url: "/blog/luat-phap" },
-    { icon: TrendingUp, title: "Tài chính - Quản lý chi tiêu",  description: "Kiến thức về tài chính cá nhân và đạt được độc lập tài chính", color: "bg-green-100 text-green-600",   posts: 22, url: "/blog/tai-chinh" },
+    { icon: Heart, title: "Tình yêu - Hôn nhân - Gia đình", description: "Tư vấn về các mối quan hệ, hôn nhân và cuộc sống gia đình ở Đức", color: "bg-red-100 text-red-600", posts: 1, url: "/blog/tinh-yeu-hon-nhan" },
+    { icon: Sparkles, title: "Lối sống - Chữa lành - Tỉnh thức", description: "Phát triển bản thân, chữa lành tâm hồn và sống có ý thức", color: "bg-purple-100 text-purple-600", posts: 1, url: "/blog/loi-song-chua-lanh" },
+    { icon: Scale, title: "Luật pháp ở Đức", description: "Hướng dẫn về luật pháp, quyền lợi và nghĩa vụ của người nước ngoài", color: "bg-blue-100 text-blue-600", posts: 0, url: "/blog/luat-phap" },
+    { icon: TrendingUp, title: "Tài chính - Quản lý chi tiêu", description: "Kiến thức về tài chính cá nhân và đạt được độc lập tài chính", color: "bg-green-100 text-green-600", posts: 0, url: "/blog/tai-chinh" },
   ];
 
+  // Chỉ 1 bài
   const featuredPosts = [
     {
       title: "10 gợi ý để bạn trở nên tự tin",
-      url: "/posts/10-goi-y-de-ban-tro-nen-tu-tin", // khớp App.tsx
-      excerpt: "Ai trong chúng ta cũng hiểu rằng, một người phụ nữ tự tin luôn là người cuốn hút và được phái nam để ý và theo đuổi, vậy sự tự tin đó tới từ đâu? Tin vui là các bạn hoàn toàn có thể tập luyện...",
+      excerpt:
+        "Ai trong chúng ta cũng hiểu rằng, một người phụ nữ tự tin luôn là người cuốn hút và được phái nam để ý và theo đuổi, vậy sự tự tin đó tới từ đâu? Tin vui là các bạn hoàn toàn có thể tập luyện...",
       category: "Chữa lành",
-      date: "2025-09-02",
-      readTime: "3 phút đọc",
-      image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&h=300&fit=crop",
-    },
-    {
-      title: "5 điều cần biết trước khi kết hôn ở Đức",
-      url: "/blog/luat-phap",
-      excerpt: "Những thủ tục pháp lý và chuẩn bị cần thiết cho cuộc sống hôn nhân tại Đức...",
-      category: "Luật pháp",
-      date: "2024-01-15",
-      readTime: "5 phút đọc",
-      image: "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=400&h=300&fit=crop",
-    },
-    {
-      title: "Từ đổ vỡ đến tái sinh: Hành trình chữa lành của tôi",
-      url: "/blog/loi-song-chua-lanh",
-      excerpt: "Chia sẻ về quá trình vượt qua khó khăn và tìm lại chính mình sau những thử thách...",
-      category: "Chữa lành",
-      date: "2024-01-12",
-      readTime: "8 phút đọc",
-      image: "https://images.unsplash.com/photo-1544027993-37dbfe43562a?w=400&h=300&fit=crop",
-    },
-    {
-      title: "Lập kế hoạch tài chính cho gia đình trẻ ở Đức",
-      url: "/blog/tai-chinh",
-      excerpt: "Những bước đầu tiên để xây dựng nền tảng tài chính vững chắc cho gia đình...",
-      category: "Tài chính",
-      date: "2024-01-10",
-      readTime: "6 phút đọc",
-      image: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&h=300&fit=crop",
-    },
-    {
-      title: "Hiểu về quyền lợi bảo hiểm y tế ở Đức",
-      url: "/blog/luat-phap",
-      excerpt: "Tìm hiểu chi tiết về hệ thống bảo hiểm y tế và các quyền lợi cơ bản...",
-      category: "Luật pháp",
-      date: "2024-01-08",
-      readTime: "7 phút đọc",
-      image: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=300&fit=crop",
-    },
-    {
-      title: "Cách xây dựng mối quan hệ bền vững",
-      url: "/blog/tinh-yeu-hon-nhan",
-      excerpt: "Những nguyên tắc cơ bản để xây dựng và duy trì mối quan hệ hạnh phúc...",
-      category: "Tình yêu",
-      date: "2024-01-05",
-      readTime: "6 phút đọc",
-      image: "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?w=400&h=300&fit=crop",
-    },
-    {
-      title: "Quản lý tài chính cá nhân hiệu quả",
-      url: "/blog/tai-chinh",
-      excerpt: "Hướng dẫn chi tiết về cách lập ngân sách và tiết kiệm một cách thông minh...",
-      category: "Tài chính",
-      date: "2024-01-03",
-      readTime: "9 phút đọc",
-      image: "https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=400&h=300&fit=crop",
+      image:
+        "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&h=300&fit=crop",
+      url: "/posts/10-goi-y-de-ban-tro-nen-tu-tin",
+      sourcePath: "src/pages/posts/TuTinPost.tsx",
     },
   ];
+
+  // Lấy giờ đăng cho bài
+  const [commitDate, setCommitDate] = useState<string>("");
+
+  useEffect(() => {
+    fetchLatestCommitISODate("src/pages/posts/TuTinPost.tsx")
+      .then((iso) => {
+        if (iso) setCommitDate(formatViDate(new Date(iso)));
+      })
+      .catch(() => setCommitDate(""));
+  }, []);
 
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
 
       <main className="pt-20">
-        {/* Hero */}
+        {/* Hero Section */}
         <section className="section-padding bg-gradient-to-br from-primary/10 to-secondary/10">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6">
@@ -95,7 +74,7 @@ const Blog = () => {
           </div>
         </section>
 
-        {/* Categories – toàn khung click được */}
+        {/* Categories */}
         <section className="section-padding">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h2 className="text-3xl font-bold text-foreground mb-8 text-center">Chuyên mục</h2>
@@ -117,14 +96,13 @@ const Blog = () => {
           </div>
         </section>
 
-        {/* Featured Posts – toàn khung click được */}
+        {/* Featured Posts */}
         <section className="section-padding bg-muted/30">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h2 className="text-3xl font-bold text-foreground mb-8">Bài viết nổi bật</h2>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
               {featuredPosts.map((post, index) => (
                 <article key={index} className="card-soft overflow-hidden group cursor-pointer relative">
-                  {/* Overlay ở TRÊN hết */}
                   <Link to={post.url} className="absolute inset-0 z-30" aria-label={`Đọc: ${post.title}`} />
                   <div className="aspect-video overflow-hidden pointer-events-none">
                     <img
@@ -134,17 +112,14 @@ const Blog = () => {
                       loading="lazy"
                     />
                   </div>
-                  {/* Vô hiệu click để overlay bắt toàn bộ */}
                   <div className="p-6 pointer-events-none">
                     <div className="flex items-center gap-4 mb-3 text-sm text-muted-foreground">
-                      <span className="px-2 py-1 bg-secondary text-secondary-foreground rounded text-xs"> {post.category} </span>
+                      <span className="px-2 py-1 bg-secondary text-secondary-foreground rounded text-xs">
+                        {post.category}
+                      </span>
                       <div className="flex items-center gap-1">
                         <Calendar className="w-3 h-3" />
-                        <span>{new Date(post.date).toLocaleDateString("vi-VN")}</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <User className="w-3 h-3" />
-                        <span>{post.readTime}</span>
+                        <span>{commitDate || "Đang lấy ngày đăng..."}</span>
                       </div>
                     </div>
                     <h4 className="font-semibold text-foreground mb-2 group-hover:text-primary transition-colors line-clamp-2">
@@ -162,14 +137,20 @@ const Blog = () => {
           </div>
         </section>
 
-        {/* Newsletter */}
+        {/* Newsletter Signup */}
         <section className="section-padding">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="card-soft p-8 text-center max-w-2xl mx-auto">
               <h3 className="text-2xl font-semibold text-foreground mb-4">Đăng ký nhận bản tin</h3>
-              <p className="text-muted-foreground mb-6">Nhận những bài viết mới nhất và kiến thức hữu ích từ Thu Từ Tâm mỗi tuần</p>
+              <p className="text-muted-foreground mb-6">
+                Nhận những bài viết mới nhất và kiến thức hữu ích từ Thu Từ Tâm mỗi tuần
+              </p>
               <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
-                <input type="email" placeholder="Nhập email của bạn" className="flex-1 px-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" />
+                <input
+                  type="email"
+                  placeholder="Nhập email của bạn"
+                  className="flex-1 px-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                />
                 <Button className="px-6">Đăng ký</Button>
               </div>
             </div>
