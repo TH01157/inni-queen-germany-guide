@@ -11,7 +11,7 @@ import LoveFamily from "./pages/categories/LoveFamily";
 import Lifestyle from "./pages/categories/Lifestyle";
 import Legal from "./pages/categories/Legal";
 import Finance from "./pages/categories/Finance";
-import TuTinPost from "./pages/posts/TuTinPost";
+import Post from "./pages/Post";            // <— dùng router động
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -27,12 +27,17 @@ const App = () => (
           <Route path="/contact" element={<Contact />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/about" element={<About />} />
+
+          {/* Category pages */}
           <Route path="/blog/tinh-yeu-hon-nhan" element={<LoveFamily />} />
           <Route path="/blog/loi-song-chua-lanh" element={<Lifestyle />} />
           <Route path="/blog/luat-phap" element={<Legal />} />
           <Route path="/blog/tai-chinh" element={<Finance />} />
-          <Route path="/posts/10-goi-y-de-ban-tro-nen-tu-tin" element={<TuTinPost />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+
+          {/* Post route động: mọi bài đều vào đây */}
+          <Route path="/posts/:slug" element={<Post />} />
+
+          {/* Catch-all */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
