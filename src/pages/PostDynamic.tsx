@@ -1,23 +1,41 @@
-import React from "react";
+import { lazy, Suspense } from "react";
 import { useParams } from "react-router-dom";
-import { POSTS } from "@/data/posts";
-import NotFound from "@/pages/NotFound";
+import NotFound from "./NotFound";
+import { posts } from "@/data/posts";
 
-const modules = import.meta.glob("/src/pages/posts/**/*.tsx");
+// Tạo map các bài viết trong thư mục posts (từ src/pages/PostDynamic.tsx nhìn sang ./posts)
+const modules = import.meta.glob("./posts/*.tsx");
+
+/** Chuyển sourcePath "src/pages/posts/ABC.tsx" -> glob key "./posts/ABC.tsx" */
+function toGlobKey(sourcePath: string) {
+  const m = sourcePath.match(/src\/pages\/(posts\/.+\.tsx)$/);
+  return m ? `./${m[1]}` : undefined;
+}
 
 export default function PostDynamic() {
-  const { slug } = useParams();
-  const entry = POSTS.find(p => p.slug === `/posts/${slug}`);
-  if (!entry) return <NotFound />;
+  const { slug } = useParams<{ slug: string }>();
 
-  const importer = modules[`/src/${entry.sourcePath}`];
+  // Tìm metadata theo slug
+  const meta = posts.find((p) => p.slug === slug);
+  if (!meta) return <NotFound />;
+
+  // Map sang key của import.meta.glob
+  const key = toGlobKey(meta.sourcePath);
+  const importer = key ? modules[key] : undefined;
   if (!importer) return <NotFound />;
 
-  const LazyPost = React.lazy(importer as any);
+  // Lazy import đúng component bài viết
+  const LazyPost = lazy(importer as unknown as () => Promise<{ default: React.ComponentType }>);
 
   return (
-    <React.Suspense fallback={<div className="section-padding text-center">Đang tải bài viết…</div>}>
+    <Suspense
+      fallback={
+        <div className="py-24 text-center text-muted-foreground">
+          Đang tải bài viết…
+        </div>
+      }
+    >
       <LazyPost />
-    </React.Suspense>
+    </Suspense>
   );
 }
