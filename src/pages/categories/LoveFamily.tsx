@@ -4,22 +4,6 @@ import { Button } from '@/components/ui/button';
 import { Heart, Calendar, User, ArrowRight } from 'lucide-react';
 
 const LoveFamily = () => {
-  const posts = [
-    {
-      title: 'Cách xây dựng mối quan hệ bền vững',
-      excerpt: 'Những nguyên tắc cơ bản để xây dựng và duy trì mối quan hệ hạnh phúc...',
-      date: '2024-01-05',
-      readTime: '6 phút đọc',
-      image: 'https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?w=400&h=300&fit=crop'
-    },
-    {
-      title: '5 điều cần biết trước khi kết hôn ở Đức',
-      excerpt: 'Những thủ tục pháp lý và chuẩn bị cần thiết cho cuộc sống hôn nhân tại Đức...',
-      date: '2024-01-15',
-      readTime: '5 phút đọc',
-      image: 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=400&h=300&fit=crop'
-    }
-  ];
 
   return (
     <div className="min-h-screen bg-background">
