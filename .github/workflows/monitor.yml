@@ -1,0 +1,117 @@
+name: Monitor repo & Pages (day 5m / night 30m, Europe/Berlin)
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"   # chạy mỗi 5 phút (UTC) - sẽ tự gác cổng theo giờ Berlin
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: read
+
+concurrency:
+  group: "monitor-pages"
+  cancel-in-progress: true
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    steps:
+      # 0) Quyết định có chạy hay skip dựa trên giờ Europe/Berlin
+      - name: Gate by local time (Europe/Berlin)
+        id: gate
+        shell: bash
+        run: |
+          HOUR=$(TZ=Europe/Berlin date +%H)
+          MIN=$(TZ=Europe/Berlin date +%M)
+
+          # Điều kiện ban ngày: 08:00–23:59 hoặc 00:00–01:59
+          if [ "$HOUR" -ge 8 ] || [ "$HOUR" -lt 2 ]; then
+            echo "mode=day" >> "$GITHUB_OUTPUT"
+            echo "It's DAY time in Berlin ($HOUR:$MIN). Will run."
+          else
+            # Ban đêm 02:00–07:59 -> chỉ giữ lại phút 00 hoặc 30
+            if [ $((10#$MIN % 30)) -eq 0 ]; then
+              echo "mode=night_run" >> "$GITHUB_OUTPUT"
+              echo "It's NIGHT in Berlin ($HOUR:$MIN) but minute%30==0. Will run."
+            else
+              echo "mode=skip" >> "$GITHUB_OUTPUT"
+              echo "It's NIGHT in Berlin ($HOUR:$MIN) and not 00/30. Will skip."
+            fi
+          fi
+
+      - name: Checkout
+        if: steps.gate.outputs.mode != 'skip'
+        uses: actions/checkout@v4
+
+      - name: Install jq
+        if: steps.gate.outputs.mode != 'skip'
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y jq
+
+      - name: Collect repo + pages status
+        if: steps.gate.outputs.mode != 'skip'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          OWNER: TH01157
+          REPO: inni-queen-germany-guide
+        run: |
+          set -euo pipefail
+          mkdir -p .monitor
+          NOW=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+          LATEST=$(curl -s -H "Authorization: Bearer $GH_TOKEN" \
+            "https://api.github.com/repos/$OWNER/$REPO/commits?sha=main&per_page=1")
+          SHA=$(echo "$LATEST" | jq -r '.[0].sha')
+          COMMIT_DATE=$(echo "$LATEST" | jq -r '.[0].commit.committer.date')
+          MESSAGE=$(echo "$LATEST" | jq -r '.[0].commit.message' | head -c 200)
+          AUTHOR=$(echo "$LATEST" | jq -r '.[0].commit.committer.name')
+
+          PAGES=$(curl -s -H "Authorization: Bearer $GH_TOKEN" \
+            "https://api.github.com/repos/$OWNER/$REPO/pages")
+          PAGES_STATUS=$(echo "$PAGES" | jq -r '.status // "unknown"')
+
+          BUILD=$(curl -s -H "Authorization: Bearer $GH_TOKEN" \
+            "https://api.github.com/repos/$OWNER/$REPO/pages/builds/latest")
+          BUILD_STATUS=$(echo "$BUILD" | jq -r '.status // "unknown"')
+
+          cat > .monitor/status.json <<EOF
+          {
+            "mode": "${{ steps.gate.outputs.mode }}",
+            "checked_at": "$NOW",
+            "latest_commit": {
+              "sha": "$SHA",
+              "date": "$COMMIT_DATE",
+              "author": "$AUTHOR",
+              "message": "$MESSAGE"
+            },
+            "pages": {
+              "status": "$PAGES_STATUS",
+              "build_status": "$BUILD_STATUS"
+            }
+          }
+          EOF
+
+          {
+            echo "### Monitor at $NOW (mode: ${{ steps.gate.outputs.mode }})"
+            echo "- Latest commit: \`$SHA\`"
+            echo "- Commit date  : \`$COMMIT_DATE\`"
+            echo "- Author       : \`$AUTHOR\`"
+            echo "- Pages status : \`$PAGES_STATUS\`"
+            echo "- Build status : \`$BUILD_STATUS\`"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Commit status file (if changed)
+        if: steps.gate.outputs.mode != 'skip'
+        run: |
+          set -e
+          if ! git diff --quiet -- .monitor/status.json; then
+            git config user.name  "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add .monitor/status.json
+            git commit -m "chore(monitor): update status $(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+            git push
+          else
+            echo "No changes to commit."
+          fi
