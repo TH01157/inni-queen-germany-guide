@@ -159,38 +159,4 @@ All colors MUST be HSL.
   }
 
 }
-/* --- Footer theming only (no global color changes) --- */
-@layer base {
-  :root {
-    /* Footer brand: #B0556C */
-    --footer-bg: 345 36.6% 51.2%;
-    --footer-fg: 0 0% 100%;
-    --footer-border: 345 36.6% 40%;
-  }
 
-  .dark {
-    --footer-bg: 345 36.6% 51.2%;
-    --footer-fg: 0 0% 100%;
-    --footer-border: 345 36.6% 40%;
-  }
-
-  /* Chỉ áp dụng bên trong <footer> */
-  footer {
-    --background: var(--footer-bg);
-    --foreground: var(--footer-fg);
-    --card: var(--footer-bg);
-    --card-foreground: var(--footer-fg);
-    --border: var(--footer-border);
-  }
-}
-
-@layer components {
-  footer a {
-    color: hsl(var(--footer-fg));
-    opacity: 0.92;
-  }
-  footer a:hover {
-    opacity: 1;
-    text-decoration: underline;
-  }
-}
