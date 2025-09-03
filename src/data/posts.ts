@@ -40,7 +40,17 @@ export const POSTS: PostMeta[] = [
     image:
       "https://images.unsplash.com/photo-1519681393784-d120267933ba?w=800&h=600&fit=crop",
     category: "lifestyle",
-    sourcePath: "src/pages/posts/ThaThuPost.tsx",
+    sourcePath: "src/pages/posts/ThaThuBanThanPost.tsx",
+  },
+ {
+    slug: "/posts/10-dieu-dan-ong-thich-o-phu-nu",
+    title: "10 điều mà đàn ông thường thích ở phụ nữ",
+    excerpt:
+      "Mỗi người đàn ông có những sở thích và ưu tiên riêng khi tìm kiếm đối tác, nhưng có một số phẩm chất chung mà nhiều đàn ông thường tìm kiếm ở phụ nữ:...",
+    image:
+      "https://images.unsplash.com/photo-1519681393784-d120267933ba?w=800&h=600&fit=crop",
+    category: "LoveFamily",
+    sourcePath: "src/pages/posts/DanOngThichOPNPost.tsx",
   },
 
   // Mở block dưới khi đã có file tương ứng:
