@@ -1,48 +1,56 @@
 // src/pages/Post.tsx
-import { lazy, Suspense, useMemo } from "react";
-import { useParams, Navigate } from "react-router-dom";
-import { POSTS } from "@/data/posts";
+import { useParams } from "react-router-dom";
+import Navigation from "@/components/Navigation";
+import Footer from "@/components/Footer";
+import { getPostBySlug } from "@/data/posts";
 
-const modules = import.meta.glob("./posts/*.tsx");
-
-function fallbackUI(title: string) {
-  return (
-    <div className="min-h-[50vh] flex items-center justify-center">
-      <div className="text-center space-y-3">
-        <div className="text-muted-foreground">Đang tải bài viết…</div>
-        <div className="font-semibold text-lg">{title}</div>
-      </div>
-    </div>
-  );
-}
+// Tạo map import tự động cho tất cả file trong /src/pages/posts
+const modules = import.meta.glob("/src/pages/posts/*.tsx");
 
 export default function Post() {
-  // Nhận slug & chuẩn hoá: bỏ mọi dấu "/" ở cuối (nếu người dùng gõ thêm)
-  const { slug: raw = "" } = useParams();
-  const slug = raw.replace(/\/+$/g, ""); // "a/", "a///" -> "a"
-  const fullSlug = `/posts/${slug}`;
+  const { slug } = useParams<{ slug: string }>();
+  const post = slug ? getPostBySlug(`/posts/${slug}`) : undefined;
 
-  // Tìm meta bài từ registry
-  const meta = useMemo(() => POSTS.find((p) => p.slug === fullSlug), [fullSlug]);
-
-  // Không có meta -> về 404
-  if (!meta) return <Navigate to="*" replace />;
-
-  // Từ sourcePath lấy ra tên file .tsx trong ./posts
-  const fileName = meta.sourcePath.split("/").pop(); // "TuTinPost.tsx"
-  const relKey = `./posts/${fileName}`;
-
-  const loader = modules[relKey];
-  if (!loader) {
-    // Nếu đổi tên file mà quên cập nhật registry
-    return <Navigate to="*" replace />;
+  if (!post) {
+    // fallback NotFound đơn giản ngay trong trang (để không văng trắng)
+    return (
+      <div className="min-h-screen bg-background">
+        <Navigation />
+        <main className="pt-24">
+          <div className="max-w-3xl mx-auto px-4">
+            <h1 className="text-2xl font-semibold mb-3">404</h1>
+            <p className="text-muted-foreground">Bài viết không tồn tại.</p>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
   }
 
-  const LazyPost = lazy(loader as any);
+  const key = `/${post.sourcePath}`; // ví dụ: /src/pages/posts/TuTinPost.tsx
+  const importer = modules[key];
 
-  return (
-    <Suspense fallback={fallbackUI(meta.title)}>
-      <LazyPost />
-    </Suspense>
-  );
+  if (!importer) {
+    // Nếu đường dẫn sai, hiển thị thông báo thay vì crash
+    return (
+      <div className="min-h-screen bg-background">
+        <Navigation />
+        <main className="pt-24">
+          <div className="max-w-3xl mx-auto px-4">
+            <h1 className="text-2xl font-semibold mb-3">Lỗi tải bài viết</h1>
+            <p className="text-muted-foreground">
+              Không tìm thấy component cho bài: <code>{post.title}</code>. Kiểm tra lại <code>{post.sourcePath}</code>.
+            </p>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  // Lazy load component của bài viết
+  // @ts-ignore – Vite trả default export là React component
+  const LazyComp = (await importer()).default;
+
+  return <LazyComp />;
 }
