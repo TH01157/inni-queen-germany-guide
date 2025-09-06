@@ -19,3 +19,9 @@ collections:
       - { label: "Ảnh đại diện", name: "image", widget: "image" }
       - { label: "Danh mục", name: "category", widget: "select", options: ["tinh-yeu-hon-nhan", "loi-song-chua-lanh", "luat-phap", "tai-chinh"] }
       - { label: "Nội dung", name: "body", widget: "markdown" }
+backend:
+  name: github
+  repo: TH01157/inni-queen-germany-guide
+  branch: main
+  auth_scope: repo
+  client_id: Ov23liwWyrp0t0WGyuN5
