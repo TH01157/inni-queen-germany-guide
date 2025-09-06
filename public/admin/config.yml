@@ -1,27 +1,39 @@
 backend:
-  name: github
-  repo: TH01157/inni-queen-germany-guide
+  name: git-gateway
   branch: main
-  base_url: https://www.inniqueen.com  # Domain của bạn
 
-media_folder: "public/images/uploads"
-public_folder: "/images/uploads"
+site_url: "https://www.inniqueen.com"
+
+media_folder: "public/images/uploads"   # nơi file ảnh sẽ được lưu trong repo
+public_folder: "/images/uploads"        # đường dẫn ảnh trên website
+
+publish_mode: editorial_workflow
+locale: "vi"
 
 collections:
   - name: "posts"
     label: "Bài viết"
     folder: "src/data/posts"
     create: true
-    slug: "{{slug}}"
+    slug: "{{slug}}"            # ví dụ: 10-goi-y-de-ban-tro-nen-tu-tin
+    extension: "json"
+    format: "json"
+    editor:
+      preview: false
+    summary: "{{title}} — {{date}}"
     fields:
       - { label: "Tiêu đề", name: "title", widget: "string" }
+      - { label: "Slug (không dấu, gạch nối)", name: "slug", widget: "string" }
       - { label: "Ngày đăng", name: "date", widget: "datetime" }
+      - { label: "Tác giả", name: "author", widget: "string", required: false, default: "Thu Từ Tâm" }
+      - label: "Danh mục"
+        name: "category"
+        widget: "select"
+        options:
+          - { label: "Tình yêu & Hôn nhân", value: "tinh-yeu-hon-nhan" }
+          - { label: "Lối sống chữa lành", value: "loi-song-chua-lanh" }
+          - { label: "Luật pháp", value: "luat-phap" }
+          - { label: "Tài chính", value: "tai-chinh" }
       - { label: "Ảnh đại diện", name: "image", widget: "image" }
-      - { label: "Danh mục", name: "category", widget: "select", options: ["tinh-yeu-hon-nhan", "loi-song-chua-lanh", "luat-phap", "tai-chinh"] }
+      - { label: "Mô tả ngắn (SEO/preview)", name: "excerpt", widget: "text", required: false }
       - { label: "Nội dung", name: "body", widget: "markdown" }
-backend:
-  name: github
-  repo: TH01157/inni-queen-germany-guide
-  branch: main
-  auth_scope: repo
-  client_id: "DÁN_CLIENT_ID_VÀO_ĐÂY"
