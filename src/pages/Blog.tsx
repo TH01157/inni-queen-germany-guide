@@ -6,6 +6,8 @@ import { CATEGORIES, type CategoryKey } from '@/data/posts';
 import { useEffect, useState } from 'react';
 import { getAllPosts } from '@/lib/allPosts';
 import type { PostMeta } from '@/types/post';
+import { getAllPosts } from "@/lib/allPosts";
+import type { PostMeta } from "@/types/post";
 
 const Blog = () => {
   const [posts, setPosts] = useState<PostMeta[]>([]);
