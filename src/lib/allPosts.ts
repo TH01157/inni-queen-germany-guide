@@ -1,6 +1,13 @@
 // src/lib/allPosts.ts
 import { POSTS, type PostMeta, type CategoryKey } from "@/data/posts";
 import { loadAllPosts, type MDPost } from "@/lib/mdPosts";
+import type { PostMeta } from "@/types/post";
+import { POSTS } from "./mdPosts"; // hoặc nơi chứa POSTS của chị
+
+export async function getAllPosts(): Promise<PostMeta[]> {
+  // Có thể load từ POSTS sẵn có
+  return POSTS;
+}
 
 /** Chuyển 1 bài Markdown thành PostMeta để PostCard dùng chung */
 function mdToPostMeta(p: MDPost): PostMeta {
