@@ -9,10 +9,14 @@ const Navigation = () => {
         </Link>
 
         <div className="flex items-center gap-6">
-          
-
-          {/* Blog sẽ bật lại sau khi khôi phục module Blog */}
-          {/* <NavLink to="/blog" className={({isActive}) => `text-sm ${isActive ? "font-semibold" : "opacity-80 hover:opacity-100"}`}>Blog</NavLink> */}
+          <NavLink
+            to="/blog"
+            className={({ isActive }) =>
+              `text-sm ${isActive ? "font-semibold" : "opacity-80 hover:opacity-100"}`
+            }
+          >
+            Blog
+          </NavLink>
 
           <a
             href="#contact"
