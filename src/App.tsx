@@ -1,5 +1,5 @@
 import Blog from "./pages/Blog";
-// import các trang chuyên mục nếu có sau
+// import các trang chuyên mục nếu có sau 
 import Post_10GoiY from "./pages/posts/10-goi-y-de-ban-tro-nen-tu-tin";
 
 function App() {
