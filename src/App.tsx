@@ -1,60 +1,34 @@
-// src/App.tsx
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
-import { useEffect } from "react";
-
+import { Routes, Route, Navigate } from "react-router-dom";
+import Navigation from "./components/Navigation";
+import Footer from "./components/Footer";
 import Index from "./pages/Index";
-import Contact from "./pages/Contact";
-import Blog from "./pages/Blog";
-import About from "./pages/About";
-import LoveFamily from "./pages/categories/LoveFamily";
-import Lifestyle from "./pages/categories/Lifestyle";
-import Legal from "./pages/categories/Legal";
-import Finance from "./pages/categories/Finance";
-import Post from "./pages/Post";        // trang bài viết dùng route động
-import NotFound from "./pages/NotFound";
 
-const queryClient = new QueryClient();
-
-function ScrollToTop() {
-  const { pathname } = useLocation();
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [pathname]);
-  return null;
-}
-
-export default function App() {
+function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <ScrollToTop />
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/blog" element={<Blog />} />
-            <Route path="/about" element={<About />} />
-
-            {/* Chuyên mục */}
-            <Route path="/blog/tinh-yeu-hon-nhan" element={<LoveFamily />} />
-            <Route path="/blog/loi-song-chua-lanh" element={<Lifestyle />} />
-            <Route path="/blog/luat-phap" element={<Legal />} />
-            <Route path="/blog/tai-chinh" element={<Finance />} />
-
-            {/* Bài viết: chỉ 1 route động */}
-            <Route path="/posts/:slug" element={<Post />} />
-
-            {/* 404 cho client-side */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-      </TooltipProvider>
-    </QueryClientProvider>
+    <div className="min-h-screen bg-background text-foreground">
+      <Navigation />
+      <main className="pt-20">
+        <Routes>
+          <Route path="/" element={<Index />} />
+          {/* Alias tạm (nếu ai gõ /home) */}
+          <Route path="/home" element={<Navigate to="/" replace />} />
+          {/* 404 tối giản */}
+          <Route
+            path="*"
+            element={
+              <div className="max-w-4xl mx-auto px-4 py-16">
+                <h1 className="text-3xl font-bold mb-2">404 – Không tìm thấy trang</h1>
+                <p className="opacity-70">
+                  Các route Blog/Posts đang được phục hồi. Vui lòng quay lại Trang chủ.
+                </p>
+              </div>
+            }
+          />
+        </Routes>
+      </main>
+      <Footer />
+    </div>
   );
 }
+
+export default App;
